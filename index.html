@@ -87,7 +87,7 @@ let images=[
 ];
 
 let level = 1;
-let maxLevels = 10;
+let maxLevels = 30;
 
 function randomOrder(){
   let arr=[0,1,2,3];
@@ -121,10 +121,10 @@ document.getElementById('startStopBtn').addEventListener('click', ()=>{
     clearInterval(ledInterval);
     leds.forEach(l=>l.classList.remove('on'));
     ledRunning=false;
-    log.innerHTML+='🚫 LED stopped<br>';
+    log.innerHTML+=' LED stopped<br>';
   } else{
     playLEDs();
-    log.innerHTML+='▶️ LED started<br>';
+    log.innerHTML+=' LED started<br>';
   }
 });
 
@@ -184,7 +184,7 @@ nextImage();
 </script>
 
 <footer>
-© 2026 Healix Team — Nurolink Project
+© 2026 Healix Team  Nurolink Project
 </footer>
 
 </body>
