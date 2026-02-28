@@ -5,56 +5,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NUROLINK — Healix Cognitive Assessment</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Syne:wght@500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-
-<!-- face-api.js — vladmandic maintained fork (TFJS bundled) -->
-<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
-
+<!-- face-api.js from justadudewhohacks — models loaded from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 <style>
 :root {
-  --bg0:#030303;--bg1:#080808;--bg2:#0d0d0d;
-  --bg3:#121212;--bg4:#181818;--bg5:#222222;
-  --b0:rgba(255,255,255,0.04);--b1:rgba(255,255,255,0.07);
-  --b2:rgba(255,255,255,0.12);--b3:rgba(255,255,255,0.20);
-  --t0:#f0f0f0;--t1:#888888;--t2:#484848;--t3:#282828;
+  --bg0:#030303; --bg1:#080808; --bg2:#0d0d0d;
+  --bg3:#121212; --bg4:#181818; --bg5:#222222;
+  --b0:rgba(255,255,255,0.04); --b1:rgba(255,255,255,0.07);
+  --b2:rgba(255,255,255,0.12); --b3:rgba(255,255,255,0.20);
+  --t0:#f0f0f0; --t1:#888888; --t2:#484848; --t3:#282828;
   --w:#ffffff;
-  --r:#ff3d5a;--g:#00e5a0;--b:#4d9fff;--y:#ffc530;
-  --ok:#00e5a0;--warn:#ffc530;--err:#ff3d5a;
-  --rr:14px;--rsm:8px;--rxs:6px;
+  --r:#ff3d5a; --g:#00e5a0; --b:#4d9fff; --y:#ffc530;
+  --ok:#00e5a0; --warn:#ffc530; --err:#ff3d5a;
+  --rr:14px; --rsm:8px; --rxs:6px;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--bg0);color:var(--t0);overflow-x:hidden;min-height:100vh;cursor:none}
+body{font-family:'DM Sans',sans-serif;background:var(--bg0);color:var(--t0);overflow-x:hidden;min-height:100vh;cursor:none;}
 button{font-family:'DM Sans',sans-serif;cursor:none;border:none;outline:none;background:none}
 ::-webkit-scrollbar{width:2px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
 
-/* ─── CURSOR ─── */
+/* ─── CURSOR ─────────────────────────────────────── */
 #cr,#cd{position:fixed;border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%)}
 #cr{width:28px;height:28px;border:1px solid rgba(255,255,255,0.3);transition:width .18s,height .18s,background .18s,border-color .18s}
 #cd{width:3px;height:3px;background:#fff}
 body.ch #cr{width:42px;height:42px;background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.55)}
 
-/* ─── BRAIN LOADER ─── */
-#brain-loader{position:fixed;inset:0;z-index:2000;background:var(--bg0);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;transition:opacity 0.6s ease}
-#brain-loader.out{opacity:0;pointer-events:none}
-#brain-loader.hidden{display:none}
-#brain-svg{width:140px;height:140px;overflow:visible}
-.brain-path{fill:none;stroke:rgba(255,255,255,0.85);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:var(--len,1000);stroke-dashoffset:var(--len,1000);transition:none}
-.brain-path.glow{stroke:rgba(255,255,255,0.4);stroke-width:3.5;filter:blur(3px)}
-#loader-label{font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.22em;color:var(--t2);text-transform:uppercase}
-.brain-ring{position:absolute;width:160px;height:160px;border-radius:50%;border:1px solid rgba(255,255,255,0.06);animation:bpulse 2.4s ease-in-out infinite}
-.brain-ring:nth-child(2){animation-delay:0.8s}
-.brain-ring:nth-child(3){animation-delay:1.6s}
+/* ─── BRAIN LOADING SCREEN ───────────────────────── */
+#brain-loader {
+  position:fixed;inset:0;z-index:2000;background:var(--bg0);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+  transition:opacity 0.6s ease;
+}
+#brain-loader.out{opacity:0;pointer-events:none;}
+#brain-loader.hidden{display:none;}
+#brain-svg{width:140px;height:140px;overflow:visible;}
+.brain-path{fill:none;stroke:rgba(255,255,255,0.85);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:var(--len,1000);stroke-dashoffset:var(--len,1000);transition:none;}
+.brain-path.glow{stroke:rgba(255,255,255,0.4);stroke-width:3.5;filter:blur(3px);}
+#loader-label{font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.22em;color:var(--t2);text-transform:uppercase;}
+.brain-ring{position:absolute;width:160px;height:160px;border-radius:50%;border:1px solid rgba(255,255,255,0.06);animation:bpulse 2.4s ease-in-out infinite;}
+.brain-ring:nth-child(2){animation-delay:0.8s;}
+.brain-ring:nth-child(3){animation-delay:1.6s;}
 @keyframes bpulse{0%{transform:scale(0.85);opacity:0}50%{opacity:1}100%{transform:scale(1.4);opacity:0}}
-#brain-ring-wrap{position:absolute;display:flex;align-items:center;justify-content:center}
+#brain-ring-wrap{position:absolute;display:flex;align-items:center;justify-content:center;}
 
-/* ─── INTRO ─── */
-#intro{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg0);transition:opacity 1.2s cubic-bezier(.7,0,.3,1);overflow:hidden}
-#intro-img{position:absolute;inset:0;background:url('https://i.postimg.cc/brQtbbxw/Screenshot-20260204-192014-Canva.jpg') center/cover no-repeat;opacity:0;scale:1.04;transition:opacity 2s ease,scale 6s ease;filter:saturate(0) brightness(0.1) contrast(1.2)}
+/* ─── INTRO ──────────────────────────────────────── */
+#intro{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg0);transition:opacity 1.2s cubic-bezier(.7,0,.3,1);overflow:hidden;}
+#intro-img{position:absolute;inset:0;background:url('https://i.postimg.cc/brQtbbxw/Screenshot-20260204-192014-Canva.jpg') center/cover no-repeat;opacity:0;scale:1.04;transition:opacity 2s ease,scale 6s ease;filter:saturate(0) brightness(0.1) contrast(1.2);}
 #intro-img.on{opacity:1;scale:1}
-#intro-vig{position:absolute;inset:0;background:radial-gradient(ellipse 85% 85% at 50% 50%,transparent 0%,rgba(3,3,3,0.75) 55%,var(--bg0) 100%)}
-#intro-grid{position:absolute;inset:0;background-image:linear-gradient(var(--b0) 1px,transparent 1px),linear-gradient(90deg,var(--b0) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 65% 65% at 50% 50%,black 15%,transparent 65%)}
+#intro-vig{position:absolute;inset:0;background:radial-gradient(ellipse 85% 85% at 50% 50%,transparent 0%,rgba(3,3,3,0.75) 55%,var(--bg0) 100%);}
+#intro-grid{position:absolute;inset:0;background-image:linear-gradient(var(--b0) 1px,transparent 1px),linear-gradient(90deg,var(--b0) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 65% 65% at 50% 50%,black 15%,transparent 65%);}
 .icn{position:absolute;width:36px;height:36px}
 .icn.tl{top:20px;left:20px;border-top:1px solid var(--b2);border-left:1px solid var(--b2)}
 .icn.tr{top:20px;right:20px;border-top:1px solid var(--b2);border-right:1px solid var(--b2)}
@@ -63,78 +65,80 @@ body.ch #cr{width:42px;height:42px;background:rgba(255,255,255,0.04);border-colo
 .ihud{position:absolute;font-family:'JetBrains Mono',monospace;font-size:0.52rem;color:var(--t3);letter-spacing:0.13em;text-transform:uppercase}
 .ihud.tl{top:24px;left:68px}.ihud.tr{top:24px;right:68px;text-align:right}
 .ihud.bl{bottom:24px;left:68px}.ihud.br{bottom:24px;right:68px;text-align:right}
-#ic{position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;opacity:0;transform:translateY(30px);transition:opacity 1s ease .7s,transform 1s cubic-bezier(.2,1,.4,1) .7s}
+#ic{position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;opacity:0;transform:translateY(30px);transition:opacity 1s ease .7s,transform 1s cubic-bezier(.2,1,.4,1) .7s;}
 #ic.on{opacity:1;transform:none}
-#intro-logo{width:68px;height:68px;border-radius:18px;margin-bottom:28px;object-fit:cover;filter:grayscale(1) brightness(0.9);box-shadow:0 0 40px rgba(255,255,255,0.08)}
-#intro-badge{display:inline-flex;align-items:center;gap:7px;padding:4px 14px;border-radius:100px;background:rgba(255,255,255,0.04);border:1px solid var(--b2);font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--t1);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:18px}
+#intro-logo{width:68px;height:68px;border-radius:18px;margin-bottom:28px;object-fit:cover;filter:grayscale(1) brightness(0.9);box-shadow:0 0 40px rgba(255,255,255,0.08);}
+#intro-badge{display:inline-flex;align-items:center;gap:7px;padding:4px 14px;border-radius:100px;background:rgba(255,255,255,0.04);border:1px solid var(--b2);font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--t1);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:18px;}
 .bdot{width:4px;height:4px;border-radius:50%;background:var(--t1);animation:dp 2s infinite}
 @keyframes dp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.2;transform:scale(0.3)}}
-#intro-title{font-family:'Syne',sans-serif;font-size:clamp(3.8rem,11vw,8.5rem);font-weight:800;letter-spacing:-0.03em;line-height:0.88;background:linear-gradient(160deg,#ffffff 0%,#888888 60%,#333333 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-#intro-sub{font-size:0.72rem;color:var(--t2);letter-spacing:0.2em;text-transform:uppercase;margin-top:10px;margin-bottom:40px;font-weight:300}
-#intro-cta{display:inline-flex;align-items:center;gap:9px;padding:9px 26px;border-radius:100px;border:1px solid var(--b2);font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:0.25em;color:var(--t1);text-transform:uppercase;animation:ctab 2.2s ease-in-out infinite}
+#intro-title{font-family:'Syne',sans-serif;font-size:clamp(3.8rem,11vw,8.5rem);font-weight:800;letter-spacing:-0.03em;line-height:0.88;background:linear-gradient(160deg,#ffffff 0%,#888888 60%,#333333 100%);-webkit-background-clip:text;background-clip:text;color:transparent;}
+#intro-sub{font-size:0.72rem;color:var(--t2);letter-spacing:0.2em;text-transform:uppercase;margin-top:10px;margin-bottom:40px;font-weight:300;}
+#intro-cta{display:inline-flex;align-items:center;gap:9px;padding:9px 26px;border-radius:100px;border:1px solid var(--b2);font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:0.25em;color:var(--t1);text-transform:uppercase;animation:ctab 2.2s ease-in-out infinite;}
 @keyframes ctab{0%,100%{opacity:1;border-color:var(--b2)}50%{opacity:.4;border-color:var(--b1)}}
 #intro.out{opacity:0;pointer-events:none}
 
-/* ─── APP ─── */
+/* ─── APP ────────────────────────────────────────── */
 #app{position:relative;z-index:1;opacity:0;transition:opacity .5s ease .1s}
 #app.on{opacity:1}
 
-/* ─── SCREENS ─── */
+/* ─── SCREENS ────────────────────────────────────── */
 .screen,.rscreen{display:none;min-height:100vh;padding:24px 20px 64px;max-width:900px;margin:0 auto}
 .screen.on,.rscreen.on{display:block;animation:sr .4s cubic-bezier(.2,1,.4,1)}
 @keyframes sr{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 
-/* ─── TOPBAR ─── */
-.topbar{display:flex;align-items:center;gap:12px;margin-bottom:26px;padding-bottom:14px;border-bottom:1px solid var(--b0);flex-wrap:wrap}
-.topbar-title{font-family:'Syne',sans-serif;font-size:clamp(.95rem,2vw,1.25rem);font-weight:700;flex:1;color:var(--t0);letter-spacing:-.015em}
-.btn-back{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--rxs);background:var(--bg3);border:1px solid var(--b1);color:var(--t1);font-size:0.78rem;font-weight:500;transition:all .2s}
+/* ─── TOPBAR ─────────────────────────────────────── */
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:26px;padding-bottom:14px;border-bottom:1px solid var(--b0);flex-wrap:wrap;}
+.topbar-title{font-family:'Syne',sans-serif;font-size:clamp(.95rem,2vw,1.25rem);font-weight:700;flex:1;color:var(--t0);letter-spacing:-.015em;}
+.btn-back{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--rxs);background:var(--bg3);border:1px solid var(--b1);color:var(--t1);font-size:0.78rem;font-weight:500;transition:all .2s;}
 .btn-back:hover{background:var(--bg4);border-color:var(--b2);color:var(--t0)}
 
-/* ─── CHIPS ─── */
+/* ─── CHIPS ──────────────────────────────────────── */
 .stats-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
-.s-chip{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rxs);padding:4px 11px;font-size:0.72rem;color:var(--t1);display:flex;align-items:center;gap:5px}
+.s-chip{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rxs);padding:4px 11px;font-size:0.72rem;color:var(--t1);display:flex;align-items:center;gap:5px;}
 .s-chip b{color:var(--t0);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:0.76rem}
 
-/* ─── INFO BOX ─── */
-.info-box{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rr);padding:13px 17px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;position:relative;overflow:hidden}
-.info-box::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)}
+/* ─── INFO BOX ───────────────────────────────────── */
+.info-box{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rr);padding:13px 17px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;position:relative;overflow:hidden;}
+.info-box::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);}
 .info-box p{font-size:0.84rem;font-weight:400;color:var(--t1);flex:1}
-.lvl-tag{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--t0);padding:4px 11px;border-radius:100px;background:rgba(255,255,255,0.06);border:1px solid var(--b2);letter-spacing:0.08em;white-space:nowrap}
+.lvl-tag{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--t0);padding:4px 11px;border-radius:100px;background:rgba(255,255,255,0.06);border:1px solid var(--b2);letter-spacing:0.08em;white-space:nowrap;}
 
-/* ─── BUTTONS ─── */
-.btn-prime{display:inline-flex;align-items:center;gap:7px;padding:10px 24px;border-radius:var(--rsm);background:var(--t0);color:var(--bg0);font-size:0.84rem;font-weight:600;transition:all .2s cubic-bezier(.2,1,.4,1);position:relative;overflow:hidden}
-.btn-prime::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.25),transparent 55%);opacity:0;transition:opacity .2s}
+/* ─── BUTTONS ────────────────────────────────────── */
+.btn-prime{display:inline-flex;align-items:center;gap:7px;padding:10px 24px;border-radius:var(--rsm);background:var(--t0);color:var(--bg0);font-size:0.84rem;font-weight:600;transition:all .2s cubic-bezier(.2,1,.4,1);position:relative;overflow:hidden;}
+.btn-prime::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.25),transparent 55%);opacity:0;transition:opacity .2s;}
 .btn-prime:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(255,255,255,.1)}
 .btn-prime:hover::before{opacity:1}
 .btn-prime:active{transform:none;box-shadow:none}
-.btn-sec{display:inline-flex;align-items:center;gap:7px;padding:9px 20px;border-radius:var(--rsm);background:var(--bg3);border:1px solid var(--b2);color:var(--t0);font-size:0.82rem;font-weight:500;transition:all .2s}
+.btn-sec{display:inline-flex;align-items:center;gap:7px;padding:9px 20px;border-radius:var(--rsm);background:var(--bg3);border:1px solid var(--b2);color:var(--t0);font-size:0.82rem;font-weight:500;transition:all .2s;}
 .btn-sec:hover{background:var(--bg4);border-color:var(--b3)}
-.btn-ghost{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:var(--rsm);border:1px solid var(--b1);color:var(--t2);font-size:0.78rem;font-weight:400;transition:all .2s}
+.btn-ghost{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:var(--rsm);border:1px solid var(--b1);color:var(--t2);font-size:0.78rem;font-weight:400;transition:all .2s;}
 .btn-ghost:hover{border-color:var(--b2);color:var(--t1)}
 
-/* ─── HOME ─── */
+/* ─── HOME ───────────────────────────────────────── */
 #home{background:var(--bg0);padding:40px 22px 80px;max-width:none}
 .home-hero{text-align:center;margin-bottom:52px;display:flex;flex-direction:column;align-items:center}
-.home-badge{display:inline-flex;align-items:center;gap:7px;padding:4px 14px;border-radius:100px;background:rgba(255,255,255,0.04);border:1px solid var(--b1);font-family:'JetBrains Mono',monospace;font-size:0.53rem;color:var(--t2);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:18px}
+.home-badge{display:inline-flex;align-items:center;gap:7px;padding:4px 14px;border-radius:100px;background:rgba(255,255,255,0.04);border:1px solid var(--b1);font-family:'JetBrains Mono',monospace;font-size:0.53rem;color:var(--t2);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:18px;}
 .hbd{width:4px;height:4px;border-radius:50%;background:var(--t1);animation:dp 2s infinite}
-.home-h1{font-family:'Syne',sans-serif;font-size:clamp(1.7rem,4.8vw,3.6rem);font-weight:800;line-height:1.05;margin-bottom:10px;letter-spacing:-.025em;color:var(--t0)}
+.home-h1{font-family:'Syne',sans-serif;font-size:clamp(1.7rem,4.8vw,3.6rem);font-weight:800;line-height:1.05;margin-bottom:10px;letter-spacing:-.025em;color:var(--t0);}
 .home-h1 span{color:var(--t1)}
 .home-sub{font-size:0.85rem;color:var(--t2);max-width:400px;line-height:1.6;font-weight:300}
-.section-label{font-family:'JetBrains Mono',monospace;font-size:0.53rem;letter-spacing:0.24em;color:var(--t3);text-transform:uppercase;text-align:center;margin-bottom:22px}
-.challenges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;max-width:1000px;margin:0 auto}
-.c-card{position:relative;overflow:hidden;background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rr);padding:24px 18px 20px;cursor:none;transition:transform .32s cubic-bezier(.2,1,.4,1),border-color .25s,box-shadow .32s}
-.c-card::before{content:'';position:absolute;top:0;left:-100%;right:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);transition:left .5s ease,right .5s ease}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:0.53rem;letter-spacing:0.24em;color:var(--t3);text-transform:uppercase;text-align:center;margin-bottom:22px;}
+.challenges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;max-width:1000px;margin:0 auto;}
+
+/* ─── CARD ───────────────────────────────────────── */
+.c-card{position:relative;overflow:hidden;background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rr);padding:24px 18px 20px;cursor:none;transition:transform .32s cubic-bezier(.2,1,.4,1),border-color .25s,box-shadow .32s;}
+.c-card::before{content:'';position:absolute;top:0;left:-100%;right:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);transition:left .5s ease,right .5s ease;}
 .c-card:hover{transform:translateY(-6px);border-color:var(--b2);box-shadow:0 16px 40px rgba(0,0,0,0.5)}
 .c-card:hover::before{left:0;right:0}
 .c-num{font-family:'JetBrains Mono',monospace;font-size:0.5rem;color:var(--t3);letter-spacing:0.2em;margin-bottom:18px}
-.c-icon{width:38px;height:38px;border-radius:10px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:14px;border:1px solid var(--b1);transition:transform .3s;filter:grayscale(0.3)}
+.c-icon{width:38px;height:38px;border-radius:10px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:14px;border:1px solid var(--b1);transition:transform .3s;filter:grayscale(0.3);}
 .c-card:hover .c-icon{transform:scale(1.08) rotate(-4deg);filter:grayscale(0)}
 .c-title{font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:700;margin-bottom:7px;color:var(--t0);letter-spacing:-.01em}
 .c-desc{font-size:0.74rem;color:var(--t2);line-height:1.6;font-weight:300}
 .c-cta{margin-top:14px;font-size:0.66rem;color:var(--t3);letter-spacing:.06em;display:flex;align-items:center;gap:4px;transition:all .2s}
 .c-card:hover .c-cta{color:var(--t1);gap:8px}
 
-/* ─── LED ─── */
+/* ─── LED ────────────────────────────────────────── */
 #led-screen{background:var(--bg0)}
 .led-wrap{max-width:400px;margin:0 auto;text-align:center}
 .led-progress{display:flex;gap:4px;justify-content:center;margin-bottom:18px}
@@ -142,8 +146,8 @@ body.ch #cr{width:42px;height:42px;background:rgba(255,255,255,0.04);border-colo
 .led-pip.done{background:var(--t2)}
 .led-pip.act{background:var(--t0);box-shadow:0 0 8px rgba(255,255,255,.3);transform:scaleY(2.5)}
 .led-pad{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:260px;margin:24px auto}
-.led-btn{width:96px;height:96px;border-radius:50%;margin:0 auto;display:block;position:relative;overflow:hidden;cursor:none;transition:transform .1s,box-shadow .12s;border:2px solid transparent}
-.led-btn::after{content:'';position:absolute;top:18%;left:22%;width:30%;height:26%;border-radius:50%;background:rgba(255,255,255,.18);transform:rotate(-30deg)}
+.led-btn{width:96px;height:96px;border-radius:50%;margin:0 auto;display:block;position:relative;overflow:hidden;cursor:none;transition:transform .1s,box-shadow .12s;border:2px solid transparent;}
+.led-btn::after{content:'';position:absolute;top:18%;left:22%;width:30%;height:26%;border-radius:50%;background:rgba(255,255,255,.18);transform:rotate(-30deg);}
 .led-btn.r{background:radial-gradient(circle at 35% 30%,#2d0a10,#120004);border-color:#200006}
 .led-btn.b{background:radial-gradient(circle at 35% 30%,#0a1530,#030810);border-color:#060e22}
 .led-btn.g{background:radial-gradient(circle at 35% 30%,#003520,#001008);border-color:#002415}
@@ -156,12 +160,12 @@ body.ch #cr{width:42px;height:42px;background:rgba(255,255,255,0.04);border-colo
 .led-btn.dis{cursor:not-allowed;opacity:.45}
 .led-status{font-size:0.83rem;color:var(--t1);min-height:24px;margin:9px 0;transition:all .3s;font-weight:300}
 
-/* ─── PHOTO ─── */
+/* ─── PHOTO ──────────────────────────────────────── */
 #photo-screen{background:var(--bg0)}
 .photo-wrap{max-width:580px;margin:0 auto;text-align:center}
-.photo-frame{width:100%;height:290px;border-radius:var(--rr);overflow:hidden;position:relative;border:1px solid var(--b1);background:var(--bg2);margin-bottom:16px}
+.photo-frame{width:100%;height:290px;border-radius:var(--rr);overflow:hidden;position:relative;border:1px solid var(--b1);background:var(--bg2);margin-bottom:16px;}
 .photo-frame img{width:100%;height:100%;object-fit:cover;transition:filter .5s,opacity .5s}
-.photo-frame-cover{position:absolute;inset:0;background:rgba(3,3,3,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;opacity:0;transition:opacity .4s;pointer-events:none}
+.photo-frame-cover{position:absolute;inset:0;background:rgba(3,3,3,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;opacity:0;transition:opacity .4s;pointer-events:none;}
 .photo-frame-cover.show{opacity:1;pointer-events:auto}
 .photo-frame-cover span{font-size:1.7rem;filter:grayscale(1)}
 .photo-frame-cover p{font-size:0.78rem;color:var(--t2)}
@@ -169,10 +173,10 @@ body.ch #cr{width:42px;height:42px;background:rgba(255,255,255,0.04);border-colo
 .cd-ring-wrap svg{transform:rotate(-90deg)}
 .cd-ring-bg{fill:none;stroke:var(--b1);stroke-width:2.5}
 .cd-ring-fg{fill:none;stroke:rgba(255,255,255,.55);stroke-width:2.5;stroke-linecap:round;transition:stroke-dashoffset .95s linear}
-.cd-ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:400;color:var(--t0)}
+.cd-ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:400;color:var(--t0);}
 .photo-opts{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.opt-btn{background:var(--bg2);border:1px solid var(--b1);color:var(--t0);padding:11px 13px;border-radius:var(--rsm);font-size:0.82rem;font-weight:500;transition:all .2s;text-align:left;display:flex;align-items:center;gap:9px}
-.opt-key{width:22px;height:22px;border-radius:5px;flex-shrink:0;background:var(--bg3);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:0.56rem;color:var(--t2);transition:all .2s}
+.opt-btn{background:var(--bg2);border:1px solid var(--b1);color:var(--t0);padding:11px 13px;border-radius:var(--rsm);font-size:0.82rem;font-weight:500;transition:all .2s;text-align:left;display:flex;align-items:center;gap:9px;}
+.opt-key{width:22px;height:22px;border-radius:5px;flex-shrink:0;background:var(--bg3);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:0.56rem;color:var(--t2);transition:all .2s;}
 .opt-btn:hover:not(:disabled){background:var(--bg3);border-color:var(--b2)}
 .opt-btn:hover:not(:disabled) .opt-key{background:rgba(255,255,255,.1);border-color:var(--b3);color:var(--t0)}
 .opt-btn.ok{background:rgba(0,229,160,.05);border-color:rgba(0,229,160,.3)}
@@ -181,16 +185,16 @@ body.ch #cr{width:42px;height:42px;background:rgba(255,255,255,0.04);border-colo
 .opt-btn.ng .opt-key{background:rgba(255,61,90,.1);color:var(--err);border-color:var(--err)}
 .opt-btn:disabled{cursor:not-allowed;opacity:.7}
 
-/* ─── SEQUENCE ─── */
+/* ─── SEQUENCE ───────────────────────────────────── */
 #seq-screen{background:var(--bg0)}
 .seq-wrap{max-width:520px;margin:0 auto;text-align:center}
-.seq-show{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rr);padding:24px 16px;min-height:116px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:9px;margin:0 0 12px}
-.seq-item{width:46px;height:46px;border-radius:var(--rxs);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:500;transition:all .2s;border:1px solid transparent}
+.seq-show{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rr);padding:24px 16px;min-height:116px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:9px;margin:0 0 12px;}
+.seq-item{width:46px;height:46px;border-radius:var(--rxs);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:500;transition:all .2s;border:1px solid transparent;}
 .seq-item.n{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15);color:var(--t0)}
 .seq-item.c{border-color:var(--b2)}
 .seq-item.flash{transform:scale(1.25);box-shadow:0 0 22px currentColor;border-color:currentColor;filter:brightness(1.5)}
 .seq-slots{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;min-height:50px;align-items:center;margin-bottom:12px}
-.seq-slot{width:44px;height:44px;border-radius:var(--rxs);background:var(--bg2);border:1px dashed var(--b2);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:400;transition:all .2s}
+.seq-slot{width:44px;height:44px;border-radius:var(--rxs);background:var(--bg2);border:1px dashed var(--b2);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:400;transition:all .2s;}
 .seq-slot.f{border-style:solid;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.05);color:var(--t0)}
 .seq-kpad{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;max-width:270px;margin:0 auto}
 .sk{padding:9px 4px;border-radius:var(--rxs);font-family:'JetBrains Mono',monospace;font-size:0.88rem;font-weight:400;transition:all .12s}
@@ -201,22 +205,22 @@ body.ch #cr{width:42px;height:42px;background:rgba(255,255,255,0.04);border-colo
 .sk.s{background:var(--t0);color:var(--bg0);border:none;grid-column:span 2;font-size:0.76rem;font-weight:600}
 .sk.s:hover{opacity:.88;transform:scale(1.01)}
 .col-keys{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:9px}
-.col-key{width:40px;height:40px;border-radius:var(--rxs);border:1px solid var(--b2);transition:all .2s;cursor:none}
+.col-key{width:40px;height:40px;border-radius:var(--rxs);border:1px solid var(--b2);transition:all .2s;cursor:none;}
 .col-key:hover{transform:scale(1.14);border-color:var(--b3);box-shadow:0 0 14px rgba(255,255,255,.14)}
 
-/* ─── REACTION ─── */
+/* ─── REACTION ───────────────────────────────────── */
 #react-screen{background:var(--bg0)}
 .react-wrap{max-width:560px;margin:0 auto;text-align:center}
-.react-arena{width:100%;height:320px;border-radius:var(--rr);background:var(--bg2);border:1px solid var(--b1);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;margin:0 0 12px;user-select:none;cursor:none;transition:all .3s}
-.react-arena::before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--b0) 1px,transparent 1px),linear-gradient(90deg,var(--b0) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.react-arena{width:100%;height:320px;border-radius:var(--rr);background:var(--bg2);border:1px solid var(--b1);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;margin:0 0 12px;user-select:none;cursor:none;transition:all .3s;}
+.react-arena::before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--b0) 1px,transparent 1px),linear-gradient(90deg,var(--b0) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
 .react-arena.ready{border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.01)}
 .react-arena.fast{border-color:rgba(255,61,90,.2)}
-.react-msg{font-family:'JetBrains Mono',monospace;font-size:0.86rem;color:var(--t2);letter-spacing:.06em;pointer-events:none;transition:all .3s}
-.react-target{position:absolute;width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,90,110,.9),var(--r));border:2px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:none;box-shadow:0 0 28px rgba(255,61,90,.5),0 0 55px rgba(255,61,90,.15);animation:tpop .2s cubic-bezier(.34,1.56,.64,1)}
+.react-msg{font-family:'JetBrains Mono',monospace;font-size:0.86rem;color:var(--t2);letter-spacing:.06em;pointer-events:none;transition:all .3s;}
+.react-target{position:absolute;width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,90,110,.9),var(--r));border:2px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:none;box-shadow:0 0 28px rgba(255,61,90,.5),0 0 55px rgba(255,61,90,.15);animation:tpop .2s cubic-bezier(.34,1.56,.64,1);}
 @keyframes tpop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
 .react-target:hover{transform:scale(1.08)}
 .react-chips{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
-.r-chip{padding:3px 9px;border-radius:100px;font-size:0.68rem;font-weight:500;font-family:'JetBrains Mono',monospace;border:1px solid var(--b1);background:var(--bg2);color:var(--t2);transition:all .3s}
+.r-chip{padding:3px 9px;border-radius:100px;font-size:0.68rem;font-weight:500;font-family:'JetBrains Mono',monospace;border:1px solid var(--b1);background:var(--bg2);color:var(--t2);transition:all .3s;}
 .r-chip.fast{background:rgba(0,229,160,.06);border-color:rgba(0,229,160,.28);color:var(--ok)}
 .r-chip.ok{background:rgba(255,197,48,.06);border-color:rgba(255,197,48,.22);color:var(--warn)}
 .r-chip.slow{background:rgba(255,61,90,.05);border-color:rgba(255,61,90,.18);color:var(--err)}
@@ -225,74 +229,117 @@ body.ch #cr{width:42px;height:42px;background:rgba(255,255,255,0.04);border-colo
 .r-stat .rv{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:500;color:var(--t0)}
 .r-stat .rl{font-size:0.62rem;color:var(--t2);margin-top:3px;letter-spacing:.08em}
 
-/* ─── FACE PIP ─── */
-#face-pip{position:fixed;bottom:22px;right:22px;z-index:800;display:none;flex-direction:column;width:210px;background:rgba(6,6,6,0.9);backdrop-filter:blur(28px) saturate(1.2);-webkit-backdrop-filter:blur(28px);border:1px solid var(--b2);border-radius:14px;overflow:hidden;box-shadow:0 20px 52px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.03);transition:width .28s cubic-bezier(.2,1,.4,1),height .28s,border-radius .28s}
+/* ─── FACE PIP ───────────────────────────────────── */
+#face-pip{position:fixed;bottom:22px;right:22px;z-index:800;display:none;flex-direction:column;width:220px;background:rgba(6,6,6,0.94);backdrop-filter:blur(28px) saturate(1.2);-webkit-backdrop-filter:blur(28px) saturate(1.2);border:1px solid var(--b2);border-radius:14px;overflow:hidden;box-shadow:0 20px 52px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.03);transition:width .28s cubic-bezier(.2,1,.4,1),height .28s,border-radius .28s;}
 #face-pip.on{display:flex}
-#face-pip.mini{width:50px;height:50px;border-radius:25px}
-#face-pip.mini #pip-body,#face-pip.mini #pip-emo-bar{display:none}
-#face-pip.mini #pip-head{height:50px;border-radius:25px;border:none;padding:0;display:flex;align-items:center;justify-content:center}
+#face-pip.mini{width:50px;height:50px;border-radius:25px;cursor:none}
+#face-pip.mini #pip-body{display:none}
+#face-pip.mini #pip-head{height:50px;border-radius:25px;border:none;padding:0;display:flex;align-items:center;justify-content:center;}
 #face-pip.mini #pip-htitle,#face-pip.mini #pip-hbadge,#face-pip.mini #pip-min{display:none}
 #face-pip.mini #pip-mdot{display:flex}
-#pip-mdot{display:none;width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 9px var(--ok);animation:dp 1.6s infinite}
-#pip-head{display:flex;align-items:center;gap:8px;padding:9px 11px;border-bottom:1px solid var(--b0);cursor:move;background:rgba(255,255,255,.015)}
+#pip-mdot{display:none;width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 9px var(--ok);animation:dp 1.6s infinite;}
+#pip-head{display:flex;align-items:center;gap:8px;padding:9px 11px;border-bottom:1px solid var(--b0);cursor:move;background:rgba(255,255,255,.015);}
 #pip-htitle{font-family:'JetBrains Mono',monospace;font-size:0.52rem;color:var(--t1);letter-spacing:.12em;text-transform:uppercase;flex:1}
 #pip-hbadge{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 7px var(--ok);animation:dp 1.6s infinite;flex-shrink:0}
-#pip-min{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:0.65rem;cursor:none;background:rgba(255,255,255,.04);border:1px solid var(--b1);transition:all .15s;flex-shrink:0}
+#pip-min{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:0.65rem;cursor:none;background:rgba(255,255,255,.04);border:1px solid var(--b1);transition:all .15s;flex-shrink:0;}
 #pip-min:hover{color:var(--t0);background:rgba(255,255,255,.08)}
 #pip-body{display:flex;flex-direction:column}
 #pip-vw{position:relative;background:#000;width:100%;aspect-ratio:4/3;overflow:hidden}
-#pip-vid{width:100%;height:100%;object-fit:cover;display:block;opacity:.9;transform:scaleX(-1)}
-#pip-cv{position:absolute;top:0;left:0;width:100%;height:100%;transform:scaleX(-1)}
-#pip-scan{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,229,160,.75),transparent);box-shadow:0 0 7px rgba(0,229,160,.35);opacity:0;animation:pscan 2.5s ease-in-out infinite}
+#pip-vid{width:100%;height:100%;object-fit:cover;display:block;opacity:.9;filter:grayscale(0.15)}
+#pip-cv{position:absolute;top:0;left:0;width:100%;height:100%}
+#pip-scan{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,229,160,.75),transparent);box-shadow:0 0 7px rgba(0,229,160,.35);opacity:0;animation:pscan 2.5s ease-in-out infinite;}
 @keyframes pscan{0%{top:0%;opacity:0}5%{opacity:1}95%{opacity:.6}100%{top:100%;opacity:0}}
 .pcc .pc{position:absolute;width:12px;height:12px}
 .pcc .pc.tl{top:5px;left:5px;border-top:1.5px solid rgba(0,229,160,.7);border-left:1.5px solid rgba(0,229,160,.7)}
 .pcc .pc.tr{top:5px;right:5px;border-top:1.5px solid rgba(0,229,160,.7);border-right:1.5px solid rgba(0,229,160,.7)}
 .pcc .pc.bl{bottom:5px;left:5px;border-bottom:1.5px solid rgba(0,229,160,.7);border-left:1.5px solid rgba(0,229,160,.7)}
 .pcc .pc.br{bottom:5px;right:5px;border-bottom:1.5px solid rgba(0,229,160,.7);border-right:1.5px solid rgba(0,229,160,.7)}
-
-/* ─── EMOTION BAR ─── */
-#pip-emo-bar{padding:8px 10px 10px;border-top:1px solid var(--b0)}
-#pip-emo-label{font-family:'JetBrains Mono',monospace;font-size:0.48rem;color:var(--t3);letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px}
-.emo-row{display:flex;align-items:center;gap:5px;margin-bottom:3px}
-.emo-name{font-family:'JetBrains Mono',monospace;font-size:0.46rem;color:var(--t2);width:42px;text-align:right;flex-shrink:0;text-transform:capitalize}
-.emo-track{flex:1;height:3px;background:var(--bg4);border-radius:2px;overflow:hidden}
-.emo-fill{height:100%;border-radius:2px;transition:width .22s ease;width:0%}
-.emo-pct{font-family:'JetBrains Mono',monospace;font-size:0.42rem;color:var(--t3);width:22px;flex-shrink:0}
-
-#pip-st{display:flex;align-items:center;justify-content:space-between;padding:6px 10px}
-#pip-stl{font-family:'JetBrains Mono',monospace;font-size:0.48rem;color:var(--t2);letter-spacing:.1em;text-transform:uppercase}
-#pip-stv{font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--ok);font-weight:500;display:flex;align-items:center;gap:4px}
-#pip-stv.w{color:var(--warn)}
-.pip-sd{width:4px;height:4px;border-radius:50%;background:currentColor;animation:dp 1.6s infinite;flex-shrink:0}
+/* ADRS panel inside pip */
+#pip-adrs{padding:7px 9px;border-top:1px solid var(--b0);}
+#pip-adrs-title{font-family:'JetBrains Mono',monospace;font-size:0.46rem;color:var(--t3);letter-spacing:.18em;text-transform:uppercase;margin-bottom:5px;}
+.adrs-row{display:flex;justify-content:space-between;align-items:center;padding:2px 0;}
+.adrs-lbl{font-size:0.6rem;color:var(--t2);font-family:'JetBrains Mono',monospace;}
+.adrs-val{font-size:0.62rem;font-weight:600;font-family:'JetBrains Mono',monospace;}
+.adrs-val.ok{color:var(--ok)}
+.adrs-val.warn{color:var(--warn)}
+.adrs-val.err{color:var(--err)}
+/* bar */
+.adrs-bar-wrap{height:3px;background:var(--bg4);border-radius:2px;margin:4px 0 2px;overflow:hidden;}
+.adrs-bar{height:3px;border-radius:2px;transition:width .6s ease,background .4s;}
+#pip-st{display:flex;align-items:center;justify-content:space-between;padding:5px 9px;border-top:1px solid var(--b0);}
+#pip-stl{font-family:'JetBrains Mono',monospace;font-size:0.52rem;color:var(--t2);letter-spacing:.1em;text-transform:uppercase}
+#pip-stv{font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--ok);font-weight:500;display:flex;align-items:center;gap:4px}
+#pip-stv.w{color:var(--warn)}.pip-sd{width:4px;height:4px;border-radius:50%;background:currentColor;animation:dp 1.6s infinite;flex-shrink:0}
 #pip-xhint{display:none;position:absolute;inset:0;cursor:none}
 #face-pip.mini #pip-xhint{display:block}
-
-/* ─── MODEL LOADING OVERLAY ─── */
-#pip-loading{position:absolute;inset:0;background:rgba(3,3,3,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;z-index:10}
-#pip-loading-txt{font-family:'JetBrains Mono',monospace;font-size:0.48rem;color:var(--t1);letter-spacing:.12em;text-align:center;text-transform:uppercase}
-#pip-loading-bar{width:80%;height:2px;background:var(--bg4);border-radius:2px;overflow:hidden}
-#pip-loading-fill{height:100%;background:rgba(255,255,255,.4);border-radius:2px;width:0%;transition:width .3s ease}
+/* Loading models indicator */
+#pip-loading{padding:14px 9px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--t2);letter-spacing:.1em;}
 
 /* Face screen */
 #face-screen{background:var(--bg0)}
 .face-wrap{max-width:460px;margin:0 auto;text-align:center}
-.face-card{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rr);padding:36px 28px;margin-bottom:14px;position:relative;overflow:hidden}
-.face-card::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 55% at 50% 0%,rgba(255,255,255,.03),transparent 65%);pointer-events:none}
+.face-card{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rr);padding:36px 28px;margin-bottom:14px;position:relative;overflow:hidden;}
+.face-card::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 55% at 50% 0%,rgba(255,255,255,.03),transparent 65%);pointer-events:none;}
 .face-icon{font-size:2.6rem;margin-bottom:14px;display:block;filter:grayscale(0.5)}
 .face-title{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;margin-bottom:7px;color:var(--t0)}
 .face-desc{font-size:0.8rem;color:var(--t2);line-height:1.6;margin-bottom:22px;font-weight:300}
 .face-chips{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-bottom:22px}
-.face-chip{display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:100px;background:var(--bg3);border:1px solid var(--b1);font-size:0.7rem;color:var(--t1)}
-#face-sbadge{display:inline-flex;align-items:center;gap:7px;padding:6px 16px;border-radius:100px;background:rgba(255,255,255,.04);border:1px solid var(--b1);font-size:0.73rem;color:var(--t1);font-weight:500;margin-top:14px;transition:all .3s}
+.face-chip{display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:100px;background:var(--bg3);border:1px solid var(--b1);font-size:0.7rem;color:var(--t1);}
+#face-sbadge{display:inline-flex;align-items:center;gap:7px;padding:6px 16px;border-radius:100px;background:rgba(255,255,255,.04);border:1px solid var(--b1);font-size:0.73rem;color:var(--t1);font-weight:500;margin-top:14px;transition:all .3s;}
 #face-sbadge.active{background:rgba(0,229,160,.06);border-color:rgba(0,229,160,.2);color:var(--ok)}
+/* model loading progress */
+#model-prog-wrap{margin-top:12px;background:var(--bg3);border:1px solid var(--b1);border-radius:var(--rsm);padding:12px 14px;text-align:left;}
+#model-prog-wrap h5{font-family:'JetBrains Mono',monospace;font-size:0.54rem;letter-spacing:.16em;text-transform:uppercase;color:var(--t2);margin-bottom:8px;}
+.mp-row{display:flex;justify-content:space-between;font-size:0.68rem;color:var(--t1);margin-bottom:3px;}
+.mp-row span:last-child{font-family:'JetBrains Mono',monospace;font-size:0.62rem;}
+.mp-row.done span:last-child{color:var(--ok)}
+.mp-row.loading span:last-child{color:var(--warn)}
+.mp-row.wait span:last-child{color:var(--t3)}
 
-/* ─── RESULT ─── */
+/* ─── ALZHEIMER REPORT (MOD-06) ─────────────────── */
+#alzheimer-screen{background:var(--bg0)}
+.alz-wrap{max-width:560px;margin:0 auto}
+.alz-brain-anim{
+  width:120px;height:120px;margin:0 auto 20px;position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.alz-brain-ring{position:absolute;border-radius:50%;border:1px solid;animation:bpulse 2.4s ease-in-out infinite;}
+.alz-brain-ring.r1{width:100%;height:100%;border-color:rgba(255,255,255,.06);}
+.alz-brain-ring.r2{width:80%;height:80%;border-color:rgba(255,255,255,.04);animation-delay:.8s;}
+.alz-risk-ring{width:180px;height:180px;margin:0 auto 14px;position:relative}
+.alz-risk-ring svg{transform:rotate(-90deg);width:100%;height:100%}
+.alz-ring-bg{fill:none;stroke:var(--bg4);stroke-width:8}
+.alz-ring-fg{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.2,1,.4,1),stroke .4s;}
+.alz-risk-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.alz-risk-score{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;letter-spacing:-.03em;color:var(--t0)}
+.alz-risk-lbl{font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:.2em;color:var(--t2);text-transform:uppercase}
+.alz-verdict{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;text-align:center;margin-bottom:6px}
+.alz-verdict-sub{font-size:0.8rem;color:var(--t2);text-align:center;line-height:1.6;max-width:420px;margin:0 auto 22px;font-weight:300}
+.alz-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.alz-metric{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rsm);padding:12px 13px;}
+.alz-metric-name{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:.14em;text-transform:uppercase;color:var(--t2);margin-bottom:5px;}
+.alz-metric-val{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--t0);margin-bottom:3px;}
+.alz-metric-bar{height:3px;border-radius:2px;background:var(--bg4);overflow:hidden;margin-top:5px;}
+.alz-metric-fill{height:3px;border-radius:2px;transition:width 1s ease .3s;}
+.alz-signals{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rr);padding:14px;margin-bottom:14px;}
+.alz-signals h4{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--t3);margin-bottom:11px;}
+.alz-signal-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--b0);font-size:0.78rem;}
+.alz-signal-row:last-child{border:none;padding-bottom:0}
+.alz-sig-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.alz-sig-text{flex:1;color:var(--t1);line-height:1.4}
+.alz-sig-badge{font-family:'JetBrains Mono',monospace;font-size:0.58rem;padding:2px 7px;border-radius:100px;border:1px solid;}
+.alz-sig-badge.ok{background:rgba(0,229,160,.06);border-color:rgba(0,229,160,.25);color:var(--ok)}
+.alz-sig-badge.warn{background:rgba(255,197,48,.06);border-color:rgba(255,197,48,.22);color:var(--warn)}
+.alz-sig-badge.err{background:rgba(255,61,90,.05);border-color:rgba(255,61,90,.2);color:var(--err)}
+.alz-disclaimer{background:rgba(255,197,48,.03);border:1px solid rgba(255,197,48,.12);border-radius:var(--rsm);padding:10px 13px;font-size:0.72rem;color:var(--t2);line-height:1.6;margin-bottom:18px;}
+.alz-disclaimer strong{color:var(--warn)}
+
+/* ─── RESULT ─────────────────────────────────────── */
 #result-screen{background:var(--bg0);padding:28px 20px 60px}
 .res-wrap{max-width:500px;margin:0 auto;text-align:center}
-.res-ring{width:170px;height:170px;border-radius:50%;margin:18px auto;display:flex;align-items:center;justify-content:center;flex-direction:column;border:1.5px solid transparent;position:relative;animation:rring .65s cubic-bezier(.2,1,.4,1)}
+.res-ring{width:170px;height:170px;border-radius:50%;margin:18px auto;display:flex;align-items:center;justify-content:center;flex-direction:column;border:1.5px solid transparent;position:relative;animation:rring .65s cubic-bezier(.2,1,.4,1);}
 @keyframes rring{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
-.res-ring::before{content:'';position:absolute;inset:-9px;border-radius:50%;border:1px dashed;opacity:.12;animation:rrot 18s linear infinite}
+.res-ring::before{content:'';position:absolute;inset:-9px;border-radius:50%;border:1px dashed;opacity:.12;animation:rrot 18s linear infinite;}
 @keyframes rrot{to{transform:rotate(360deg)}}
 .res-ring.g{border-color:rgba(0,229,160,.45);background:radial-gradient(circle,rgba(0,229,160,.06),transparent 70%);box-shadow:0 0 50px rgba(0,229,160,.1)}
 .res-ring.g::before{border-color:var(--ok)}
@@ -300,7 +347,8 @@ body.ch #cr{width:42px;height:42px;background:rgba(255,255,255,0.04);border-colo
 .res-ring.y::before{border-color:var(--warn)}
 .res-ring.r{border-color:rgba(255,61,90,.35);background:radial-gradient(circle,rgba(255,61,90,.05),transparent 70%);box-shadow:0 0 50px rgba(255,61,90,.09)}
 .res-ring.r::before{border-color:var(--err)}
-.res-pct{font-family:'Syne',sans-serif;font-size:2.6rem;font-weight:800;color:var(--t0);letter-spacing:-.03em}
+.res-pct{font-family:'Syne',sans-serif;font-size:2.6rem;font-weight:800;color:var(--t0);letter-spacing:-.03em;animation:cup .75s cubic-bezier(.2,1,.4,1)}
+@keyframes cup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .res-pct-label{font-size:0.54rem;color:var(--t2);letter-spacing:.2em;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
 .res-assess{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin:14px 0 7px;color:var(--t0)}
 .res-msg{font-size:0.8rem;color:var(--t2);line-height:1.7;max-width:380px;margin:0 auto 22px;font-weight:300}
@@ -321,116 +369,192 @@ body.ch #cr{width:42px;height:42px;background:rgba(255,255,255,0.04);border-colo
 
 @media(max-width:640px){
   .challenges-grid{grid-template-columns:1fr 1fr}
-  .led-btn{width:78px;height:78px}.led-pad{max-width:190px;gap:12px}
+  .led-btn{width:78px;height:78px}
+  .led-pad{max-width:190px;gap:12px}
   .photo-frame{height:210px}
   .react-arena{height:240px}
   #face-pip{bottom:14px;right:14px}
+  .alz-grid{grid-template-columns:1fr}
 }
 @media(max-width:380px){.challenges-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div id="cr"></div><div id="cd"></div>
 
-<!-- BRAIN LOADER -->
+<div id="cr"></div>
+<div id="cd"></div>
+
+<!-- ═══ BRAIN LOADER ═══════════════════════════════════ -->
 <div id="brain-loader" class="hidden">
   <div style="position:relative;display:flex;align-items:center;justify-content:center;width:180px;height:180px;">
     <div id="brain-ring-wrap">
-      <div class="brain-ring"></div><div class="brain-ring"></div><div class="brain-ring"></div>
+      <div class="brain-ring"></div>
+      <div class="brain-ring"></div>
+      <div class="brain-ring"></div>
     </div>
     <svg id="brain-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <path class="brain-path glow" id="bp-glow" d="M50,15 C42,10 30,12 26,22 C22,18 14,20 12,30 C8,34 8,44 14,48 C10,54 12,64 20,66 C22,74 30,80 40,78 L40,88 M50,88 L50,15 C58,10 70,12 74,22 C78,18 86,20 88,30 C92,34 92,44 86,48 C90,54 88,64 80,66 C78,74 70,80 60,78 L60,88"/>
-      <path class="brain-path" id="bp1" d="M50,15 C42,10 30,12 26,22 C22,18 14,20 12,30 C8,34 8,44 14,48 C10,54 12,64 20,66 C22,74 30,80 40,78 L40,88 L60,88 L60,78 C70,80 78,74 80,66 C88,64 90,54 86,48 C92,44 92,34 88,30 C86,20 78,18 74,22 C70,12 58,10 50,15 Z"/>
+      <path class="brain-path glow" id="bp-glow"
+        d="M50,15 C42,10 30,12 26,22 C22,18 14,20 12,30 C8,34 8,44 14,48 C10,54 12,64 20,66 C22,74 30,80 40,78 L40,88 M50,88 L50,15 C58,10 70,12 74,22 C78,18 86,20 88,30 C92,34 92,44 86,48 C90,54 88,64 80,66 C78,74 70,80 60,78 L60,88"/>
+      <path class="brain-path" id="bp1"
+        d="M50,15 C42,10 30,12 26,22 C22,18 14,20 12,30 C8,34 8,44 14,48 C10,54 12,64 20,66 C22,74 30,80 40,78 L40,88 L60,88 L60,78 C70,80 78,74 80,66 C88,64 90,54 86,48 C92,44 92,34 88,30 C86,20 78,18 74,22 C70,12 58,10 50,15 Z"/>
       <path class="brain-path" id="bp2" d="M50,15 L50,88"/>
       <path class="brain-path" id="bp3" d="M28,30 C24,36 22,44 26,50"/>
       <path class="brain-path" id="bp4" d="M18,38 C16,46 18,56 24,62"/>
       <path class="brain-path" id="bp5" d="M32,22 C28,28 28,38 34,44"/>
       <path class="brain-path" id="bp6" d="M26,50 C24,58 28,68 36,72"/>
       <path class="brain-path" id="bp7" d="M34,44 C30,52 30,62 36,68"/>
-      <path class="brain-path" id="bp8" d="M72,30 C76,36 78,44 74,50"/>
-      <path class="brain-path" id="bp9" d="M82,38 C84,46 82,56 76,62"/>
+      <path class="brain-path" id="bp8"  d="M72,30 C76,36 78,44 74,50"/>
+      <path class="brain-path" id="bp9"  d="M82,38 C84,46 82,56 76,62"/>
       <path class="brain-path" id="bp10" d="M68,22 C72,28 72,38 66,44"/>
       <path class="brain-path" id="bp11" d="M74,50 C76,58 72,68 64,72"/>
       <path class="brain-path" id="bp12" d="M66,44 C70,52 70,62 64,68"/>
       <path class="brain-path" id="bp13" d="M44,85 C46,80 48,76 50,76 C52,76 54,80 56,85"/>
     </svg>
   </div>
-  <div id="loader-label">Loading module<span>...</span></div>
+  <div id="loader-label">Loading module<span id="ell">...</span></div>
 </div>
 
-<!-- FACE PIP -->
+<!-- ═══ FACE PIP ════════════════════════════════════════ -->
 <div id="face-pip">
   <div id="pip-xhint" onclick="pipToggle()"></div>
   <div id="pip-head">
-    <div id="pip-mdot"></div><div id="pip-hbadge"></div>
-    <div id="pip-htitle">Emotion Scan</div>
+    <div id="pip-mdot"></div>
+    <div id="pip-hbadge"></div>
+    <div id="pip-htitle">Alzheimer Scan</div>
     <button id="pip-min" onclick="pipToggle()">—</button>
   </div>
   <div id="pip-body">
-    <div id="pip-vw">
+    <div id="pip-loading">Loading AI models...</div>
+    <div id="pip-vw" style="display:none">
       <video id="pip-vid" autoplay muted playsinline></video>
       <canvas id="pip-cv"></canvas>
       <div id="pip-scan"></div>
-      <div class="pcc"><div class="pc tl"></div><div class="pc tr"></div><div class="pc bl"></div><div class="pc br"></div></div>
-      <!-- model loading overlay -->
-      <div id="pip-loading">
-        <div id="pip-loading-txt">Loading AI models</div>
-        <div id="pip-loading-bar"><div id="pip-loading-fill"></div></div>
+      <div class="pcc">
+        <div class="pc tl"></div><div class="pc tr"></div>
+        <div class="pc bl"></div><div class="pc br"></div>
       </div>
     </div>
-    <div id="pip-st">
-      <div id="pip-stl">Emotion</div>
-      <div id="pip-stv"><span class="pip-sd"></span><span id="pip-svt">Initializing</span></div>
+    <!-- ADRS metrics panel -->
+    <div id="pip-adrs">
+      <div id="pip-adrs-title">ADRS Live Metrics</div>
+      <div class="adrs-row">
+        <span class="adrs-lbl">Face Detected</span>
+        <span class="adrs-val" id="adrs-face">—</span>
+      </div>
+      <div class="adrs-row">
+        <span class="adrs-lbl">Expression</span>
+        <span class="adrs-val" id="adrs-expr">—</span>
+      </div>
+      <div class="adrs-row">
+        <span class="adrs-lbl">Affect Variance</span>
+        <span class="adrs-val" id="adrs-affect">—</span>
+      </div>
+      <div class="adrs-row">
+        <span class="adrs-lbl">Risk Score</span>
+        <span class="adrs-val err" id="adrs-score">—</span>
+      </div>
+      <div class="adrs-bar-wrap"><div class="adrs-bar" id="adrs-bar" style="width:0%;background:var(--ok)"></div></div>
     </div>
-    <!-- EMOTION BARS -->
-    <div id="pip-emo-bar">
-      <div id="pip-emo-label">Expression Analysis</div>
-      <!-- rows filled by JS -->
-      <div id="pip-emo-rows"></div>
+    <div id="pip-st">
+      <div id="pip-stl">Detection</div>
+      <div id="pip-stv"><span class="pip-sd"></span><span id="pip-svt">Loading</span></div>
     </div>
   </div>
 </div>
 
-<!-- INTRO -->
+<!-- ═══ INTRO ════════════════════════════════════════════ -->
 <div id="intro">
-  <div id="intro-img"></div><div id="intro-vig"></div><div id="intro-grid"></div>
-  <div class="icn tl"></div><div class="icn tr"></div><div class="icn bl"></div><div class="icn br"></div>
-  <div class="ihud tl">SYS:ONLINE · v3.1</div><div class="ihud tr">HEALIX RESEARCH</div>
-  <div class="ihud bl">COGNITIVE ASSESSMENT PLATFORM</div><div class="ihud br">MODULE: ACTIVE</div>
+  <div id="intro-img"></div>
+  <div id="intro-vig"></div>
+  <div id="intro-grid"></div>
+  <div class="icn tl"></div><div class="icn tr"></div>
+  <div class="icn bl"></div><div class="icn br"></div>
+  <div class="ihud tl">SYS:ONLINE · v3.1</div>
+  <div class="ihud tr">HEALIX RESEARCH</div>
+  <div class="ihud bl">COGNITIVE ASSESSMENT PLATFORM</div>
+  <div class="ihud br">ADRS: ACTIVE</div>
   <div id="ic">
-    <img id="intro-logo" src="https://i.postimg.cc/R0MntNhm/retouch-2026020419165937.png" alt="Healix" onerror="this.style.display='none'">
+    <img id="intro-logo"
+         src="https://i.postimg.cc/R0MntNhm/retouch-2026020419165937.png"
+         alt="Healix" onerror="this.style.display='none'">
     <div id="intro-badge"><span class="bdot"></span>Healix Team Presents</div>
     <div id="intro-title">NUROLINK</div>
-    <div id="intro-sub">Cognitive &amp; Behavioral Assessment Platform</div>
-    <div id="intro-cta"><span class="bdot" style="background:rgba(255,255,255,.5)"></span>Press Any Key to Begin</div>
+    <div id="intro-sub">Cognitive &amp; Alzheimer Risk Assessment Platform</div>
+    <div id="intro-cta">
+      <span class="bdot" style="background:rgba(255,255,255,.5)"></span>
+      Press Any Key to Begin
+    </div>
   </div>
 </div>
 
-<!-- APP -->
+<!-- ═══ APP ══════════════════════════════════════════════ -->
 <div id="app">
+
   <!-- HOME -->
   <div id="home" class="screen on">
     <div class="home-hero">
-      <div class="home-badge"><span class="hbd"></span>Clinical Cognitive Assessment</div>
+      <div class="home-badge"><span class="hbd"></span>Clinical Cognitive Assessment + ADRS</div>
       <h1 class="home-h1">Healix Team<br><span>Nurolink Project</span></h1>
-      <p class="home-sub">Select a module below to begin your evaluation session</p>
+      <p class="home-sub">Select a module to begin evaluation. Face recognition runs live via AI models (face-api.js) and contributes to the Alzheimer's Disease Risk Score.</p>
     </div>
     <p class="section-label">— Assessment Modules —</p>
     <div class="challenges-grid">
-      <div class="c-card" onclick="launch('led')"><div class="c-num">MOD-01</div><div class="c-icon">💡</div><div class="c-title">LED Memory</div><div class="c-desc">Replicate LED sequences across 10 progressive levels. Evaluates short-term sequential memory.</div><div class="c-cta">Launch →</div></div>
-      <div class="c-card" onclick="launch('photo')"><div class="c-num">MOD-02</div><div class="c-icon">🖼️</div><div class="c-title">Photographic Memory</div><div class="c-desc">Memorize briefly shown images then answer recall questions. Measures visual recognition speed.</div><div class="c-cta">Launch →</div></div>
-      <div class="c-card" onclick="launch('seq')"><div class="c-num">MOD-03</div><div class="c-icon">🔢</div><div class="c-title">Sequence Test</div><div class="c-desc">Recall growing number and color sequences. Assesses working memory and pattern recognition.</div><div class="c-cta">Launch →</div></div>
-      <div class="c-card" onclick="launch('react')"><div class="c-num">MOD-04</div><div class="c-icon">⚡</div><div class="c-title">Reaction Test</div><div class="c-desc">Click targets as fast as possible. Precisely measures reaction time and attention performance.</div><div class="c-cta">Launch →</div></div>
-      <div class="c-card" onclick="launch('face')"><div class="c-num">MOD-05</div><div class="c-icon" style="filter:none">🧠</div><div class="c-title">Emotion Detection</div><div class="c-desc">Real-time facial expression analysis via AI. Runs as pip while you complete other modules.</div><div class="c-cta">Launch →</div></div>
+      <div class="c-card" onclick="launch('led')">
+        <div class="c-num">MOD-01</div><div class="c-icon">💡</div>
+        <div class="c-title">LED Memory</div>
+        <div class="c-desc">Replicate LED sequences across 10 levels. Evaluates short-term sequential memory.</div>
+        <div class="c-cta">Launch →</div>
+      </div>
+      <div class="c-card" onclick="launch('photo')">
+        <div class="c-num">MOD-02</div><div class="c-icon">🖼️</div>
+        <div class="c-title">Photographic Memory</div>
+        <div class="c-desc">Memorize images then answer recall questions. Measures visual recognition speed.</div>
+        <div class="c-cta">Launch →</div>
+      </div>
+      <div class="c-card" onclick="launch('seq')">
+        <div class="c-num">MOD-03</div><div class="c-icon">🔢</div>
+        <div class="c-title">Sequence Test</div>
+        <div class="c-desc">Recall growing number and color sequences. Assesses working memory.</div>
+        <div class="c-cta">Launch →</div>
+      </div>
+      <div class="c-card" onclick="launch('react')">
+        <div class="c-num">MOD-04</div><div class="c-icon">⚡</div>
+        <div class="c-title">Reaction Test</div>
+        <div class="c-desc">Click targets as fast as possible. Measures reaction time and psychomotor speed.</div>
+        <div class="c-cta">Launch →</div>
+      </div>
+      <div class="c-card" onclick="launch('face')">
+        <div class="c-num">MOD-05</div><div class="c-icon" style="filter:none">👁</div>
+        <div class="c-title">Face AI Scan</div>
+        <div class="c-desc">Real face-api.js detection — landmark tracking, expression analysis, affect variance.</div>
+        <div class="c-cta">Launch →</div>
+      </div>
+      <div class="c-card" onclick="launch('alzheimer')" style="border-color:rgba(255,197,48,.15);background:rgba(255,197,48,.02)">
+        <div class="c-num">MOD-06</div><div class="c-icon" style="background:rgba(255,197,48,.08);border-color:rgba(255,197,48,.2)">🧠</div>
+        <div class="c-title">Alzheimer Risk Report</div>
+        <div class="c-desc">Combined ADRS from all completed modules + live face AI data. Full clinical-style report.</div>
+        <div class="c-cta">View Report →</div>
+      </div>
     </div>
   </div>
 
   <!-- LED -->
   <div id="led-screen" class="screen">
-    <div class="topbar"><button class="btn-back" onclick="goHome()">← Back</button><div class="topbar-title">LED Memory</div></div>
-    <div class="stats-row"><div class="s-chip">Level <b id="led-lv">1</b>/10</div><div class="s-chip">Score <b id="led-sc">0</b></div><div class="s-chip">Accuracy <b id="led-ac">—</b></div><div class="s-chip">Best <b id="led-bt">—</b>ms</div></div>
+    <div class="topbar">
+      <button class="btn-back" onclick="goHome()">← Back</button>
+      <div class="topbar-title">LED Memory</div>
+    </div>
+    <div class="stats-row">
+      <div class="s-chip">Level <b id="led-lv">1</b>/10</div>
+      <div class="s-chip">Score <b id="led-sc">0</b></div>
+      <div class="s-chip">Accuracy <b id="led-ac">—</b></div>
+      <div class="s-chip">Best <b id="led-bt">—</b>ms</div>
+    </div>
     <div class="led-wrap">
-      <div class="info-box"><p id="led-inst">Watch the sequence of lights and repeat it exactly</p><div class="lvl-tag">ROUND <span id="led-rn">1</span></div></div>
+      <div class="info-box">
+        <p id="led-inst">Watch the sequence of lights and repeat it exactly</p>
+        <div class="lvl-tag">ROUND <span id="led-rn">1</span></div>
+      </div>
       <div class="led-progress" id="led-prog"></div>
       <div class="led-pad">
         <button class="led-btn r dis" id="lr" onclick="lp('r')"></button>
@@ -439,37 +563,72 @@ body.ch #cr{width:42px;height:42px;background:rgba(255,255,255,0.04);border-colo
         <button class="led-btn y dis" id="ly" onclick="lp('y')"></button>
       </div>
       <div class="led-status" id="led-st">Press Start to begin</div>
-      <div style="text-align:center;margin-top:12px"><button class="btn-prime" id="led-sb" onclick="ledStart()">Start Game</button></div>
+      <div style="text-align:center;margin-top:12px">
+        <button class="btn-prime" id="led-sb" onclick="ledStart()">Start Game</button>
+      </div>
     </div>
   </div>
 
   <!-- PHOTO -->
   <div id="photo-screen" class="screen">
-    <div class="topbar"><button class="btn-back" onclick="goHome()">← Back</button><div class="topbar-title">Photographic Memory</div></div>
-    <div class="stats-row"><div class="s-chip">Level <b id="ph-lv">1</b>/8</div><div class="s-chip">Score <b id="ph-sc">0</b></div><div class="s-chip">Correct <b id="ph-co">0</b></div><div class="s-chip">Q <b id="ph-q">0</b>/8</div></div>
+    <div class="topbar">
+      <button class="btn-back" onclick="goHome()">← Back</button>
+      <div class="topbar-title">Photographic Memory</div>
+    </div>
+    <div class="stats-row">
+      <div class="s-chip">Level <b id="ph-lv">1</b>/8</div>
+      <div class="s-chip">Score <b id="ph-sc">0</b></div>
+      <div class="s-chip">Correct <b id="ph-co">0</b></div>
+      <div class="s-chip">Q <b id="ph-q">0</b>/8</div>
+    </div>
     <div class="photo-wrap">
-      <div class="info-box"><p id="ph-inst">Memorize the image, then answer the recall question</p><div class="lvl-tag" id="ph-ltag">LEVEL 1</div></div>
+      <div class="info-box">
+        <p id="ph-inst">Memorize the image, then answer the recall question</p>
+        <div class="lvl-tag" id="ph-ltag">LEVEL 1</div>
+      </div>
       <div class="photo-frame" id="ph-frame">
-        <div id="ph-ph" style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--t2);font-size:0.84rem;flex-direction:column;gap:8px"><span style="font-size:1.8rem;filter:grayscale(1)">🖼️</span>Press Start</div>
+        <div id="ph-ph" style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--t2);font-size:0.84rem;flex-direction:column;gap:8px">
+          <span style="font-size:1.8rem;filter:grayscale(1)">🖼️</span>Press Start
+        </div>
         <img id="ph-img" src="" alt="" style="display:none">
-        <div class="photo-frame-cover" id="ph-cover"><span>🧠</span><p>What did you observe?</p></div>
+        <div class="photo-frame-cover" id="ph-cover">
+          <span>🧠</span><p>What did you observe?</p>
+        </div>
         <div class="cd-ring-wrap" id="ph-ring" style="display:none">
-          <svg viewBox="0 0 50 50" width="50" height="50"><circle class="cd-ring-bg" cx="25" cy="25" r="21"/><circle class="cd-ring-fg" id="ph-rfg" cx="25" cy="25" r="21" stroke-dasharray="132" stroke-dashoffset="0"/></svg>
+          <svg viewBox="0 0 50 50" width="50" height="50">
+            <circle class="cd-ring-bg" cx="25" cy="25" r="21"/>
+            <circle class="cd-ring-fg" id="ph-rfg" cx="25" cy="25" r="21" stroke-dasharray="132" stroke-dashoffset="0"/>
+          </svg>
           <div class="cd-ring-num" id="ph-cdn">5</div>
         </div>
       </div>
       <div id="ph-opts" class="photo-opts" style="display:none"></div>
-      <div style="text-align:center;margin-top:14px"><button class="btn-prime" id="ph-sb" onclick="photoStart()">Start Challenge</button></div>
+      <div style="text-align:center;margin-top:14px">
+        <button class="btn-prime" id="ph-sb" onclick="photoStart()">Start Challenge</button>
+      </div>
     </div>
   </div>
 
   <!-- SEQ -->
   <div id="seq-screen" class="screen">
-    <div class="topbar"><button class="btn-back" onclick="goHome()">← Back</button><div class="topbar-title">Sequence Test</div></div>
-    <div class="stats-row"><div class="s-chip">Level <b id="sq-lv">1</b>/10</div><div class="s-chip">Score <b id="sq-sc">0</b></div><div class="s-chip">Streak <b id="sq-st">0</b></div><div class="s-chip">Round <b id="sq-rn">0</b>/10</div></div>
+    <div class="topbar">
+      <button class="btn-back" onclick="goHome()">← Back</button>
+      <div class="topbar-title">Sequence Test</div>
+    </div>
+    <div class="stats-row">
+      <div class="s-chip">Level <b id="sq-lv">1</b>/10</div>
+      <div class="s-chip">Score <b id="sq-sc">0</b></div>
+      <div class="s-chip">Streak <b id="sq-st">0</b></div>
+      <div class="s-chip">Round <b id="sq-rn">0</b>/10</div>
+    </div>
     <div class="seq-wrap">
-      <div class="info-box"><p id="sq-inst">Watch the sequence flash — then enter it from memory</p><div class="lvl-tag" id="sq-tag">NUMBERS</div></div>
-      <div class="seq-show" id="sq-disp"><div style="color:var(--t2);font-size:0.82rem;font-family:'JetBrains Mono',monospace">Press Start to begin</div></div>
+      <div class="info-box">
+        <p id="sq-inst">Watch the sequence flash — then enter it from memory</p>
+        <div class="lvl-tag" id="sq-tag">NUMBERS</div>
+      </div>
+      <div class="seq-show" id="sq-disp">
+        <div style="color:var(--t2);font-size:0.82rem;font-family:'JetBrains Mono',monospace">Press Start to begin</div>
+      </div>
       <div class="seq-slots" id="sq-slots"></div>
       <div id="sq-ctrl"><div style="text-align:center"><button class="btn-prime" onclick="seqStart()">Start Test</button></div></div>
     </div>
@@ -477,48 +636,116 @@ body.ch #cr{width:42px;height:42px;background:rgba(255,255,255,0.04);border-colo
 
   <!-- REACT -->
   <div id="react-screen" class="screen">
-    <div class="topbar"><button class="btn-back" onclick="goHome()">← Back</button><div class="topbar-title">Reaction Test</div></div>
-    <div class="stats-row"><div class="s-chip">Round <b id="rt-rn">0</b>/10</div><div class="s-chip">Best <b id="rt-bt">—</b>ms</div><div class="s-chip">Avg <b id="rt-av">—</b>ms</div><div class="s-chip">Rating <b id="rt-rt">—</b></div></div>
+    <div class="topbar">
+      <button class="btn-back" onclick="goHome()">← Back</button>
+      <div class="topbar-title">Reaction Test</div>
+    </div>
+    <div class="stats-row">
+      <div class="s-chip">Round <b id="rt-rn">0</b>/10</div>
+      <div class="s-chip">Best <b id="rt-bt">—</b>ms</div>
+      <div class="s-chip">Avg <b id="rt-av">—</b>ms</div>
+      <div class="s-chip">Rating <b id="rt-rt">—</b></div>
+    </div>
     <div class="react-wrap">
-      <div class="info-box"><p>Wait for the target — tap it as fast as you can</p><div class="lvl-tag">10 ROUNDS</div></div>
+      <div class="info-box">
+        <p>Wait for the target — tap it as fast as you can</p>
+        <div class="lvl-tag">10 ROUNDS</div>
+      </div>
       <div class="react-arena wait" id="rt-arena" onclick="rtAreaClick()">
         <div class="react-msg" id="rt-msg">Press Start</div>
         <div class="react-target" id="rt-tgt" style="display:none" onclick="rtHit(event)">🎯</div>
       </div>
       <div class="react-chips" id="rt-chips"></div>
       <div class="react-sg" id="rt-sg"></div>
-      <div style="text-align:center;margin-top:12px"><button class="btn-prime" id="rt-sb" onclick="rtStart()">Start Test</button></div>
+      <div style="text-align:center;margin-top:12px">
+        <button class="btn-prime" id="rt-sb" onclick="rtStart()">Start Test</button>
+      </div>
     </div>
   </div>
 
-  <!-- FACE / EMOTION -->
+  <!-- FACE -->
   <div id="face-screen" class="screen">
-    <div class="topbar"><button class="btn-back" onclick="goHome()">← Back</button><div class="topbar-title">Emotion Detection</div></div>
+    <div class="topbar">
+      <button class="btn-back" onclick="goHome()">← Back</button>
+      <div class="topbar-title">Face AI Recognition</div>
+    </div>
     <div class="face-wrap">
       <div class="face-card">
-        <span class="face-icon">🧠</span>
-        <div class="face-title">Real-Time Emotion Analysis</div>
-        <div class="face-desc">Powered by face-api.js (TensorFlow.js). Detects 7 facial expressions live — happy, sad, angry, fearful, disgusted, surprised, neutral. Runs as a floating pip so you can monitor emotion state during any test.</div>
+        <span class="face-icon">👁</span>
+        <div class="face-title">Alzheimer Face Analysis</div>
+        <div class="face-desc">Uses <strong style="color:var(--t0)">face-api.js</strong> (TensorFlow.js) for real-time facial landmark detection, expression recognition, and affect variance analysis — all locally in your browser, no data leaves your device.</div>
         <div class="face-chips">
-          <div class="face-chip">😊 7 Expressions</div>
-          <div class="face-chip">🤖 AI Powered</div>
-          <div class="face-chip">📌 Always On Top</div>
-          <div class="face-chip">✋ Draggable</div>
+          <div class="face-chip">🎯 68-pt Landmarks</div>
+          <div class="face-chip">😐 Affect Analysis</div>
+          <div class="face-chip">🔐 On-Device AI</div>
+          <div class="face-chip">📊 ADRS Feed</div>
         </div>
         <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
-          <button class="btn-prime" onclick="pipStart()">Launch Emotion Pip</button>
+          <button class="btn-prime" onclick="pipStart()">Launch Face Scan</button>
           <button class="btn-ghost" onclick="pipStop()">Stop Camera</button>
         </div>
         <div id="face-sbadge">● Camera Offline</div>
+        <div id="model-prog-wrap">
+          <h5>AI Model Status</h5>
+          <div class="mp-row wait" id="mp-tiny"><span>TinyFaceDetector</span><span>Waiting</span></div>
+          <div class="mp-row wait" id="mp-land"><span>Face Landmarks (68pt)</span><span>Waiting</span></div>
+          <div class="mp-row wait" id="mp-expr"><span>Expression Recognition</span><span>Waiting</span></div>
+          <div class="mp-row wait" id="mp-age"><span>Age &amp; Gender</span><span>Waiting</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALZHEIMER REPORT (MOD-06) -->
+  <div id="alzheimer-screen" class="screen">
+    <div class="topbar">
+      <button class="btn-back" onclick="goHome()">← Home</button>
+      <div class="topbar-title">Alzheimer Risk Report</div>
+    </div>
+    <div class="alz-wrap">
+      <!-- Animated risk ring -->
+      <div class="alz-risk-ring" id="alz-ring-wrap">
+        <svg viewBox="0 0 180 180">
+          <circle class="alz-ring-bg" cx="90" cy="90" r="74"/>
+          <circle class="alz-ring-fg" id="alz-ring-fg" cx="90" cy="90" r="74"
+            stroke-dasharray="465" stroke-dashoffset="465"/>
+        </svg>
+        <div class="alz-risk-num">
+          <div class="alz-risk-score" id="alz-score-num">—</div>
+          <div class="alz-risk-lbl">ADRS</div>
+        </div>
+      </div>
+      <div class="alz-verdict" id="alz-verdict">Calculating...</div>
+      <div class="alz-verdict-sub" id="alz-verdict-sub"></div>
+      <!-- metric grid -->
+      <div class="alz-grid" id="alz-grid"></div>
+      <!-- clinical signals -->
+      <div class="alz-signals" id="alz-signals">
+        <h4>Clinical Signals</h4>
+        <div id="alz-signals-body"></div>
+      </div>
+      <!-- disclaimer -->
+      <div class="alz-disclaimer">
+        <strong>⚠ Research Screening Tool Only</strong> — This ADRS is generated by a cognitive assessment platform and facial analysis AI. It is <em>not</em> a medical diagnosis. Alzheimer's disease is diagnosed by qualified neurologists using comprehensive clinical evaluation including MRI, PET, CSF biomarkers, and neuropsychological testing. Always consult a licensed healthcare professional.
+      </div>
+      <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
+        <button class="btn-prime" onclick="goHome()">Return Home</button>
+        <button class="btn-sec" onclick="launch('alzheimer')">↺ Refresh Report</button>
       </div>
     </div>
   </div>
 
   <!-- RESULT -->
   <div id="result-screen" class="rscreen">
-    <div class="topbar"><button class="btn-back" onclick="goHome()">← Home</button><div class="topbar-title">Assessment Result</div></div>
+    <div class="topbar">
+      <button class="btn-back" onclick="goHome()">← Home</button>
+      <div class="topbar-title">Assessment Result</div>
+    </div>
     <div class="res-wrap">
-      <div class="res-ring" id="res-ring"><div class="res-pct" id="res-pct">—</div><div class="res-pct-label">Score</div></div>
+      <div class="res-ring" id="res-ring">
+        <div class="res-pct" id="res-pct">—</div>
+        <div class="res-pct-label">Score</div>
+      </div>
       <div class="res-assess" id="res-assess">—</div>
       <div class="res-msg" id="res-msg">—</div>
       <div class="res-bd" id="res-bd"></div>
@@ -526,64 +753,53 @@ body.ch #cr{width:42px;height:42px;background:rgba(255,255,255,0.04);border-colo
       <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
         <button class="btn-prime" onclick="goHome()">Return Home</button>
         <button class="btn-sec" onclick="retry()">↺ Retry</button>
+        <button class="btn-ghost" onclick="launch('alzheimer')">🧠 View ADRS</button>
       </div>
     </div>
   </div>
+
 </div>
 
 <script>
 'use strict';
 
-/* ── CURSOR ─── */
+/* ── CURSOR ───────────────────────────────────────── */
 (function(){
   const r=document.getElementById('cr'),d=document.getElementById('cd');
   let mx=0,my=0,ox=0,oy=0;
   document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
-  (function tick(){ox+=(mx-ox)*.12;oy+=(my-oy)*.12;r.style.left=ox+'px';r.style.top=oy+'px';d.style.left=mx+'px';d.style.top=my+'px';requestAnimationFrame(tick)})();
+  (function tick(){ox+=(mx-ox)*.12;oy+=(my-oy)*.12;r.style.cssText+=`;left:${ox}px;top:${oy}px`;d.style.cssText+=`;left:${mx}px;top:${my}px`;requestAnimationFrame(tick)})();
   document.querySelectorAll('button,a,.c-card,.led-btn,.col-key,.react-target').forEach(el=>{
     el.addEventListener('mouseenter',()=>document.body.classList.add('ch'));
     el.addEventListener('mouseleave',()=>document.body.classList.remove('ch'));
   });
 })();
 
-/* ── BRAIN LOADER ─── */
+/* ── BRAIN LOADER ─────────────────────────────────── */
 const BL=document.getElementById('brain-loader');
 let brainAnim=null;
+function easeInOut(t){return t<0.5?2*t*t:-1+(4-2*t)*t}
 function animateBrain(){
   const paths=Array.from(document.querySelectorAll('.brain-path:not(.glow)'));
   const glowPath=document.querySelector('.brain-path.glow');
-  const total=paths.reduce((s,p)=>s+(p.getTotalLength?p.getTotalLength():400),0);
-  let start=null;const DUR=2200,PAUSE=600;
-  paths.forEach(p=>{const l=p.getTotalLength?p.getTotalLength():400;p.style.strokeDasharray=l;p.style.strokeDashoffset=l});
+  const total=paths.reduce((s,p)=>{const l=p.getTotalLength?p.getTotalLength():400;return s+l},0);
+  let start=null;const DURATION=2200;
+  paths.forEach(p=>{const len=p.getTotalLength?p.getTotalLength():400;p.style.strokeDasharray=len;p.style.strokeDashoffset=len});
   if(glowPath){const gl=glowPath.getTotalLength?glowPath.getTotalLength():800;glowPath.style.strokeDasharray=gl;glowPath.style.strokeDashoffset=gl}
-  let cum=0;
-  const tl=paths.map(p=>{const len=p.getTotalLength?p.getTotalLength():400;const s=(cum/total)*DUR;const e=((cum+len)/total)*DUR;cum+=len;return{p,len,s,e}});
+  let cumulative=0;
+  const timeline=paths.map(p=>{const len=p.getTotalLength?p.getTotalLength():400;const st=(cumulative/total)*DURATION;const et=((cumulative+len)/total)*DURATION;cumulative+=len;return{p,len,st,et}});
   function draw(ts){
-    if(!start)start=ts;
-    const el=(ts-start)%(DUR+PAUSE);const t=Math.min(el,DUR);
-    tl.forEach(({p,len,s,e})=>{
-      if(t<=s)p.style.strokeDashoffset=len;
-      else if(t>=e)p.style.strokeDashoffset=0;
-      else p.style.strokeDashoffset=len*(1-(t-s)/(e-s));
-    });
-    if(glowPath){const gl=glowPath.getTotalLength?glowPath.getTotalLength():800;const gp=Math.max(0,Math.min(1,(t-50)/(DUR-50)));const ei=t=>t<.5?2*t*t:-1+(4-2*t)*t;glowPath.style.strokeDashoffset=gl*(1-ei(gp))}
+    if(!start)start=ts;const elapsed=(ts-start)%(DURATION+600);const t=Math.min(elapsed,DURATION);
+    timeline.forEach(({p,len,st,et})=>{if(t<=st)p.style.strokeDashoffset=len;else if(t>=et)p.style.strokeDashoffset=0;else{const pr=(t-st)/(et-st);p.style.strokeDashoffset=len*(1-pr)}});
+    if(glowPath){const gl=glowPath.getTotalLength?glowPath.getTotalLength():800;const gp=Math.max(0,Math.min(1,(t-50)/(DURATION-50)));glowPath.style.strokeDashoffset=gl*(1-easeInOut(gp))}
     brainAnim=requestAnimationFrame(draw);
   }
   brainAnim=requestAnimationFrame(draw);
 }
-function showLoader(){
-  BL.classList.remove('hidden','out');
-  document.querySelectorAll('.brain-path').forEach(p=>{const l=p.getTotalLength?p.getTotalLength():400;p.style.strokeDasharray=l;p.style.strokeDashoffset=l});
-  if(brainAnim)cancelAnimationFrame(brainAnim);
-  animateBrain();
-}
-function hideLoader(cb){
-  BL.classList.add('out');
-  if(brainAnim){cancelAnimationFrame(brainAnim);brainAnim=null}
-  setTimeout(()=>{BL.classList.add('hidden');cb&&cb()},650);
-}
+function showLoader(){BL.classList.remove('hidden','out');document.querySelectorAll('.brain-path').forEach(p=>{const len=p.getTotalLength?p.getTotalLength():400;p.style.strokeDasharray=len;p.style.strokeDashoffset=len});if(brainAnim)cancelAnimationFrame(brainAnim);animateBrain()}
+function hideLoader(cb){BL.classList.add('out');if(brainAnim){cancelAnimationFrame(brainAnim);brainAnim=null}setTimeout(()=>{BL.classList.add('hidden');cb&&cb()},650)}
 
-/* ── INTRO ─── */
+/* ── INTRO ────────────────────────────────────────── */
 (function(){
   const intro=document.getElementById('intro'),img=document.getElementById('intro-img'),ic=document.getElementById('ic'),app=document.getElementById('app');
   const i=new Image();i.onload=()=>img.classList.add('on');i.src='https://i.postimg.cc/brQtbbxw/Screenshot-20260204-192014-Canva.jpg';
@@ -593,7 +809,7 @@ function hideLoader(cb){
   document.addEventListener('keydown',dismiss);document.addEventListener('click',dismiss);
 })();
 
-/* ── NAV ─── */
+/* ── NAVIGATION ───────────────────────────────────── */
 let currentChallenge=null;
 function showScreen(id){document.querySelectorAll('.screen,.rscreen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo({top:0,behavior:'smooth'})}
 function launch(name){
@@ -604,307 +820,347 @@ function launch(name){
     else if(name==='seq'){showScreen('seq-screen');seqReset()}
     else if(name==='react'){showScreen('react-screen');rtReset()}
     else if(name==='face'){showScreen('face-screen')}
+    else if(name==='alzheimer'){showScreen('alzheimer-screen');buildAlzheimerReport()}
   })},1800);
 }
 function goHome(){showScreen('home')}
 function retry(){if(currentChallenge)launch(currentChallenge)}
 
-/* ── RESULT ─── */
+/* ── RESULT ───────────────────────────────────────── */
 function showResult(score,max,breakdown,log){
   const pct=Math.round((score/Math.max(max,1))*100);
   const ring=document.getElementById('res-ring');
-  document.getElementById('res-pct').textContent=pct+'%';ring.className='res-ring';
+  document.getElementById('res-pct').textContent=pct+'%';
+  ring.className='res-ring';
   let cls,assess,msg;
   if(pct>=75){cls='g';assess='✅ Normal — Healthy Cognitive Function';msg='Performance indicators fall within healthy clinical norms. No immediate concerns detected.'}
-  else if(pct>=45){cls='y';assess='⚠️ Borderline — Follow-Up Recommended';msg='Moderate variance from expected norms observed. A follow-up assessment within 30 days is advised.'}
-  else{cls='r';assess='🔴 Below Baseline — Specialist Consultation Advised';msg='Several indicators fall below clinical thresholds. Prompt specialist consultation is recommended.'}
+  else if(pct>=45){cls='y';assess='⚠️ Borderline — Follow-Up Recommended';msg='Moderate variance from expected norms. Follow-up cognitive assessment within 30 days is advised.'}
+  else{cls='r';assess='🔴 Below Baseline — Specialist Consultation Advised';msg='Several indicators fall below clinical thresholds. Prompt consultation with a cognitive specialist is recommended.'}
   ring.classList.add(cls);
-  document.getElementById('res-assess').textContent=assess;document.getElementById('res-msg').textContent=msg;
-  document.getElementById('res-bd').innerHTML='<h4>Performance Breakdown</h4>'+breakdown.map(r=>`<div class="res-row"><span class="rk">${r.label}</span><span class="rv">${r.value}</span></div>`).join('');
+  document.getElementById('res-assess').textContent=assess;
+  document.getElementById('res-msg').textContent=msg;
+  document.getElementById('res-bd').innerHTML=`<h4>Performance Breakdown</h4>`+breakdown.map(r=>`<div class="res-row"><span class="rk">${r.label}</span><span class="rv">${r.value}</span></div>`).join('');
   document.getElementById('res-log').innerHTML=`<h4>Response Log (${log.length} entries)</h4>`+log.map((e,i)=>`<div class="log-r"><span style="color:var(--t2)">${i+1}. ${e.q}</span><span class="lt">${e.time}ms</span><span class="lc ${e.correct?'ok':'ng'}">${e.correct?'✓':'✗'}</span></div>`).join('');
   showScreen('result-screen');
 }
 
-/* ── LED ─── */
+/* ── GLOBAL SCORES STORE (for ADRS) ──────────────── */
+const SCORES={led:null,photo:null,seq:null,react:null};
+
+/* ── LED MEMORY ───────────────────────────────────── */
 const LIDS={r:'lr',b:'lb',g:'lg',y:'ly'};const LCOLS=['r','b','g','y'];
 let lSeq=[],lUser=[],lLev=1,lSc=0,lRn=1,lPlay=false,lOk=0,lTot=0,lBest=Infinity,lT0=0,lLog=[];
-function ledReset(){lSeq=[];lUser=[];lLev=1;lSc=0;lRn=1;lPlay=false;lOk=0;lTot=0;lBest=Infinity;lLog=[];_lS();document.getElementById('led-st').textContent='Press Start to begin';document.getElementById('led-sb').style.display='inline-flex';lDis(true);lProg()}
+function ledReset(){lSeq=[];lUser=[];lLev=1;lSc=0;lRn=1;lPlay=false;lOk=0;lTot=0;lBest=Infinity;lLog=[];_lS();document.getElementById('led-st').textContent='Press Start to begin';document.getElementById('led-inst').textContent='Watch the sequence of lights and repeat it exactly';document.getElementById('led-sb').style.display='inline-flex';lDis(true);lProg()}
 function _lS(){document.getElementById('led-lv').textContent=lLev;document.getElementById('led-sc').textContent=lSc;document.getElementById('led-ac').textContent=lTot?Math.round((lOk/lTot)*100)+'%':'—';document.getElementById('led-bt').textContent=lBest<Infinity?lBest:'—';document.getElementById('led-rn').textContent=lRn}
 function lProg(){document.getElementById('led-prog').innerHTML=Array.from({length:10}).map((_,i)=>{let c='led-pip';if(i<lRn-1)c+=' done';else if(i===lRn-1)c+=' act';return`<div class="${c}"></div>`}).join('')}
 function ledStart(){document.getElementById('led-sb').style.display='none';lNext()}
-function lNext(){if(lLev>10){lFinish();return}lUser=[];lSeq.push(LCOLS[Math.floor(Math.random()*4)]);lDis(true);lProg();_lS();document.getElementById('led-inst').textContent='Watch carefully...';setTimeout(lPlaySeq,700)}
-function lPlaySeq(){const spd=Math.max(270,720-lLev*45);let i=0;lPlay=true;const nx=()=>{if(i>=lSeq.length){setTimeout(()=>{lPlay=false;lDis(false);document.getElementById('led-inst').textContent='▶ Repeat!';lT0=Date.now()},spd);return}lFlash(lSeq[i]);i++;setTimeout(nx,spd+220)};nx()}
+function lNext(){if(lLev>10){lFinish();return}lUser=[];lSeq.push(LCOLS[Math.floor(Math.random()*4)]);lDis(true);lProg();_lS();document.getElementById('led-inst').textContent='Watch carefully...';document.getElementById('led-st').textContent=`Sequence length: ${lSeq.length}`;setTimeout(lPlaySeq,700)}
+function lPlaySeq(){const spd=Math.max(270,720-lLev*45);let i=0;lPlay=true;const nx=()=>{if(i>=lSeq.length){setTimeout(()=>{lPlay=false;lDis(false);document.getElementById('led-inst').textContent='▶ Now repeat the sequence!';document.getElementById('led-st').textContent=`Enter ${lSeq.length} color${lSeq.length>1?'s':''}`;lT0=Date.now()},spd);return}lFlash(lSeq[i]);i++;setTimeout(nx,spd+220)};nx()}
 function lFlash(c){const el=document.getElementById(LIDS[c]);el.classList.add('lit');setTimeout(()=>el.classList.remove('lit'),420)}
-function lp(c){
-  if(lPlay||document.getElementById(LIDS[c]).classList.contains('dis'))return;
-  lFlash(c);lUser.push(c);const idx=lUser.length-1,elapsed=Date.now()-lT0;
-  if(lUser[idx]!==lSeq[idx]){lTot++;lLog.push({q:`Round ${lRn} step ${idx+1}`,time:elapsed,correct:false});document.getElementById('led-st').textContent='❌ Incorrect';lDis(true);setTimeout(lNext,1300);_lS();return}
-  if(lUser.length===lSeq.length){const bonus=Math.max(0,600-Math.floor(elapsed/8));lSc+=100+bonus+lLev*5;lOk++;lTot++;if(elapsed<lBest)lBest=elapsed;lLog.push({q:`Round ${lRn}`,time:elapsed,correct:true});document.getElementById('led-st').textContent='✅ Correct!';lDis(true);lLev++;lRn++;setTimeout(lNext,1200);_lS()}
-}
+function lp(c){if(lPlay||document.getElementById(LIDS[c]).classList.contains('dis'))return;lFlash(c);lUser.push(c);const idx=lUser.length-1,elapsed=Date.now()-lT0;if(lUser[idx]!==lSeq[idx]){lTot++;lLog.push({q:`Round ${lRn} step ${idx+1}`,time:elapsed,correct:false});document.getElementById('led-st').textContent='❌ Incorrect — next round';document.getElementById('led-inst').textContent='Wrong sequence';lDis(true);setTimeout(lNext,1300);_lS();return}if(lUser.length===lSeq.length){const bonus=Math.max(0,600-Math.floor(elapsed/8));lSc+=100+bonus+lLev*5;lOk++;lTot++;if(elapsed<lBest)lBest=elapsed;lLog.push({q:`Round ${lRn}`,time:elapsed,correct:true});document.getElementById('led-st').textContent='✅ Correct!';document.getElementById('led-inst').textContent=`Level ${lLev} complete!`;lDis(true);lLev++;lRn++;setTimeout(lNext,1200);_lS()}}
 function lDis(d){LCOLS.forEach(c=>{const el=document.getElementById(LIDS[c]);d?el.classList.add('dis'):el.classList.remove('dis')})}
-function lFinish(){showResult(lSc,8000,[{label:'Rounds',value:`${lRn-1}/10`},{label:'Score',value:lSc},{label:'Accuracy',value:lTot?Math.round((lOk/lTot)*100)+'%':'—'},{label:'Best RT',value:lBest<Infinity?lBest+'ms':'—'},{label:'Max Seq',value:lSeq.length}],lLog)}
+function lFinish(){
+  SCORES.led={acc:lTot?lOk/lTot:0,level:lLev-1,score:lSc,best:lBest<Infinity?lBest:null};
+  showResult(lSc,8000,[{label:'Rounds Completed',value:`${lRn-1}/10`},{label:'Score',value:lSc},{label:'Accuracy',value:lTot?Math.round((lOk/lTot)*100)+'%':'—'},{label:'Best Response Time',value:lBest<Infinity?lBest+'ms':'—'},{label:'Max Sequence',value:lSeq.length}],lLog);
+}
 
-/* ── PHOTO ─── */
+/* ── PHOTOGRAPHIC MEMORY ──────────────────────────── */
 const PDATA=[
-  {url:'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=700&q=80',q:'What animal appears?',a:'Dog',opts:['Cat','Dog','Bird','Rabbit']},
-  {url:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=700&q=80',q:'What landscape is shown?',a:'Mountains',opts:['Ocean','Desert','Mountains','Forest']},
+  {url:'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=700&q=80',q:'What animal appears in the image?',a:'Dog',opts:['Cat','Dog','Bird','Rabbit']},
+  {url:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=700&q=80',q:'What natural landscape is shown?',a:'Mountains',opts:['Ocean','Desert','Mountains','Forest']},
   {url:'https://images.unsplash.com/photo-1550159930-40066082a4fc?w=700&q=80',q:'What food item is visible?',a:'Apple',opts:['Banana','Orange','Apple','Grapes']},
   {url:'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=700&q=80',q:'What animal is featured?',a:'Cat',opts:['Dog','Cat','Fox','Raccoon']},
   {url:'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=700&q=80',q:'What environment is depicted?',a:'City',opts:['Village','Forest','City','Beach']},
-  {url:'https://images.unsplash.com/photo-1431440869543-efaf3388c585?w=700&q=80',q:'What season is shown?',a:'Winter',opts:['Summer','Autumn','Winter','Spring']},
+  {url:'https://images.unsplash.com/photo-1431440869543-efaf3388c585?w=700&q=80',q:'What season does the scene show?',a:'Winter',opts:['Summer','Autumn','Winter','Spring']},
   {url:'https://images.unsplash.com/photo-1508193638397-1c4234db14d8?w=700&q=80',q:'What is the primary setting?',a:'Forest',opts:['Desert','Forest','Ocean','Arctic']},
   {url:'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=700&q=80',q:'What is the main element?',a:'Trees',opts:['Rocks','Water','Trees','Buildings']}
 ];
 let pLev=1,pSc=0,pCo=0,pCur=0,pLog=[],pTimer=null;
-function photoReset(){pLev=1;pSc=0;pCo=0;pCur=0;pLog=[];clearInterval(pTimer);_pS();document.getElementById('ph-sb').style.display='inline-flex';document.getElementById('ph-opts').style.display='none';document.getElementById('ph-img').style.display='none';document.getElementById('ph-ring').style.display='none';document.getElementById('ph-cover').classList.remove('show');document.getElementById('ph-ph').style.display='flex';document.getElementById('ph-ph').innerHTML='<span style="font-size:1.8rem">🖼️</span>Press Start'}
+function photoReset(){pLev=1;pSc=0;pCo=0;pCur=0;pLog=[];clearInterval(pTimer);_pS();document.getElementById('ph-sb').style.display='inline-flex';document.getElementById('ph-opts').style.display='none';document.getElementById('ph-img').style.display='none';document.getElementById('ph-ring').style.display='none';document.getElementById('ph-cover').classList.remove('show');document.getElementById('ph-ph').style.display='flex';document.getElementById('ph-ph').innerHTML='<span style="font-size:1.8rem;filter:grayscale(1)">🖼️</span>Press Start';document.getElementById('ph-inst').textContent='Memorize the image, then answer the recall question'}
 function _pS(){document.getElementById('ph-lv').textContent=pLev;document.getElementById('ph-sc').textContent=pSc;document.getElementById('ph-co').textContent=pCo;document.getElementById('ph-q').textContent=pCur}
 function photoStart(){document.getElementById('ph-sb').style.display='none';pShow()}
-function pShow(){
-  if(pCur>=PDATA.length){pFinish();return}
-  const d=PDATA[pCur];const showMs=Math.max(1500,5500-(pLev-1)*500);const secs=Math.round(showMs/1000);
-  const ph=document.getElementById('ph-ph'),img=document.getElementById('ph-img'),ring=document.getElementById('ph-ring'),rfg=document.getElementById('ph-rfg'),cdn=document.getElementById('ph-cdn'),cover=document.getElementById('ph-cover'),opts=document.getElementById('ph-opts');
-  ph.style.display='none';opts.style.display='none';cover.classList.remove('show');img.src=d.url;img.style.display='block';img.style.filter='';img.style.opacity='1';ring.style.display='block';
-  document.getElementById('ph-inst').textContent='👁 Memorize this image!';document.getElementById('ph-ltag').textContent='LEVEL '+pLev;
-  const circ=132;let rem=secs;cdn.textContent=rem;rfg.style.strokeDashoffset='0';clearInterval(pTimer);
-  pTimer=setInterval(()=>{rem--;cdn.textContent=rem;rfg.style.strokeDashoffset=(circ-(rem/secs)*circ)+'';if(rem<=0){clearInterval(pTimer);pAsk(d)}},1000);
-}
-function pAsk(d){
-  const img=document.getElementById('ph-img'),ring=document.getElementById('ph-ring'),opts=document.getElementById('ph-opts'),cover=document.getElementById('ph-cover');
-  img.style.filter='blur(12px) grayscale(0.8)';img.style.opacity='0.12';ring.style.display='none';cover.classList.add('show');
-  document.getElementById('ph-inst').textContent=d.q;
-  const KEYS=['A','B','C','D'];const sh=[...d.opts].sort(()=>Math.random()-.5);const t0=Date.now();
-  opts.style.display='grid';
-  opts.innerHTML=sh.map((o,i)=>`<button class="opt-btn" onclick="pAns('${o}','${d.a}',this,${t0})"><span class="opt-key">${KEYS[i]}</span>${o}</button>`).join('');
-}
-function pAns(sel,cor,btn,t0){
-  const ok=sel===cor,el=Date.now()-t0;document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
-  if(ok){btn.classList.add('ok');pSc+=Math.max(60,200-Math.floor(el/25));pCo++}
-  else{btn.classList.add('ng');pSc=Math.max(0,pSc-20);document.querySelectorAll('.opt-btn').forEach(b=>{if(b.textContent.includes(cor))b.classList.add('ok')})}
-  pLog.push({q:PDATA[pCur].q.slice(0,32)+'…',time:el,correct:ok});pCur++;if(pCur%2===0)pLev++;
-  document.getElementById('ph-img').style.filter='';document.getElementById('ph-img').style.opacity='1';document.getElementById('ph-cover').classList.remove('show');_pS();setTimeout(pShow,1600);
-}
-function pFinish(){showResult(pCo,PDATA.length,[{label:'Correct',value:`${pCo}/${PDATA.length}`},{label:'Accuracy',value:Math.round((pCo/PDATA.length)*100)+'%'},{label:'Score',value:pSc},{label:'Final Level',value:pLev}],pLog)}
+function pShow(){if(pCur>=PDATA.length){pFinish();return}const d=PDATA[pCur];const showMs=Math.max(1500,5500-(pLev-1)*500);const secs=Math.round(showMs/1000);const ph=document.getElementById('ph-ph'),img=document.getElementById('ph-img'),ring=document.getElementById('ph-ring'),rfg=document.getElementById('ph-rfg'),cdn=document.getElementById('ph-cdn'),cover=document.getElementById('ph-cover'),opts=document.getElementById('ph-opts');ph.style.display='none';opts.style.display='none';cover.classList.remove('show');img.src=d.url;img.style.display='block';img.style.filter='';img.style.opacity='1';ring.style.display='block';document.getElementById('ph-inst').textContent='👁 Memorize this image!';document.getElementById('ph-ltag').textContent='LEVEL '+pLev;const circ=132;let rem=secs;cdn.textContent=rem;rfg.style.strokeDashoffset='0';clearInterval(pTimer);pTimer=setInterval(()=>{rem--;cdn.textContent=rem;rfg.style.strokeDashoffset=(circ-(rem/secs)*circ)+'';if(rem<=0){clearInterval(pTimer);pAsk(d)}},1000)}
+function pAsk(d){const img=document.getElementById('ph-img'),ring=document.getElementById('ph-ring'),opts=document.getElementById('ph-opts'),cover=document.getElementById('ph-cover');img.style.filter='blur(12px) grayscale(0.8)';img.style.opacity='0.12';ring.style.display='none';cover.classList.add('show');document.getElementById('ph-inst').textContent=d.q;const KEYS=['A','B','C','D'];const sh=[...d.opts].sort(()=>Math.random()-.5);const t0=Date.now();opts.style.display='grid';opts.innerHTML=sh.map((o,i)=>`<button class="opt-btn" onclick="pAns('${o}','${d.a}',this,${t0})"><span class="opt-key">${KEYS[i]}</span>${o}</button>`).join('')}
+function pAns(sel,cor,btn,t0){const ok=sel===cor,el=Date.now()-t0;document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);if(ok){btn.classList.add('ok');pSc+=Math.max(60,200-Math.floor(el/25));pCo++}else{btn.classList.add('ng');pSc=Math.max(0,pSc-20);document.querySelectorAll('.opt-btn').forEach(b=>{if(b.textContent.includes(cor))b.classList.add('ok')})}pLog.push({q:PDATA[pCur].q.slice(0,32)+'...',time:el,correct:ok});pCur++;if(pCur%2===0)pLev++;document.getElementById('ph-img').style.filter='';document.getElementById('ph-img').style.opacity='1';document.getElementById('ph-cover').classList.remove('show');_pS();setTimeout(pShow,1600)}
+function pFinish(){SCORES.photo={acc:pCo/PDATA.length,correct:pCo,total:PDATA.length,score:pSc};showResult(pCo,PDATA.length,[{label:'Correct',value:`${pCo}/${PDATA.length}`},{label:'Accuracy',value:Math.round((pCo/PDATA.length)*100)+'%'},{label:'Score',value:pSc},{label:'Final Level',value:pLev}],pLog)}
 
-/* ── SEQUENCE ─── */
+/* ── SEQUENCE TEST ────────────────────────────────── */
 const SPAL=['#ff3d5a','#ffc530','#00e5a0','#4d9fff','#c87dff','#ff8c42'];
 let sLev=1,sSc=0,sSt=0,sRn=0,sSeq=[],sUser=[],sMode='numbers',sT0=0,sLog=[];
-function seqReset(){sLev=1;sSc=0;sSt=0;sRn=0;sSeq=[];sUser=[];sLog=[];_sS();document.getElementById('sq-disp').innerHTML='<div style="color:var(--t2);font-size:0.82rem;font-family:\'JetBrains Mono\',monospace">Press Start</div>';document.getElementById('sq-slots').innerHTML='';document.getElementById('sq-ctrl').innerHTML='<div style="text-align:center"><button class="btn-prime" onclick="seqStart()">Start Test</button></div>'}
+function seqReset(){sLev=1;sSc=0;sSt=0;sRn=0;sSeq=[];sUser=[];sLog=[];_sS();document.getElementById('sq-disp').innerHTML='<div style="color:var(--t2);font-size:0.82rem;font-family:\'JetBrains Mono\',monospace">Press Start</div>';document.getElementById('sq-slots').innerHTML='';document.getElementById('sq-ctrl').innerHTML='<div style="text-align:center"><button class="btn-prime" onclick="seqStart()">Start Test</button></div>';document.getElementById('sq-tag').textContent='NUMBERS'}
 function _sS(){document.getElementById('sq-lv').textContent=sLev;document.getElementById('sq-sc').textContent=sSc;document.getElementById('sq-st').textContent=sSt;document.getElementById('sq-rn').textContent=sRn}
-function seqStart(){sMode=sLev<=5?'numbers':'colors';document.getElementById('sq-ctrl').innerHTML='';sNext()}
-function sNext(){sRn++;const len=sLev+2;sSeq=Array.from({length:len},()=>sMode==='numbers'?Math.floor(Math.random()*9)+1:Math.floor(Math.random()*SPAL.length));sUser=[];document.getElementById('sq-inst').textContent='👁 Watch...';document.getElementById('sq-ctrl').innerHTML='';document.getElementById('sq-slots').innerHTML='';_sS();sPlaySeq()}
+function seqStart(){sMode=sLev<=5?'numbers':'colors';document.getElementById('sq-tag').textContent=sMode==='numbers'?'NUMBERS':'COLORS';document.getElementById('sq-ctrl').innerHTML='';sNext()}
+function sNext(){sRn++;const len=sLev+2;sSeq=Array.from({length:len},()=>sMode==='numbers'?Math.floor(Math.random()*9)+1:Math.floor(Math.random()*SPAL.length));sUser=[];document.getElementById('sq-inst').textContent='👁 Watch the sequence...';document.getElementById('sq-ctrl').innerHTML='';document.getElementById('sq-slots').innerHTML='';_sS();sPlaySeq()}
 function sPlaySeq(){const spd=Math.max(340,950-sLev*55);const disp=document.getElementById('sq-disp');disp.innerHTML='';let i=0;const nx=()=>{disp.innerHTML='';if(i>=sSeq.length){setTimeout(()=>{sInput();sT0=Date.now()},400);return}const el=document.createElement('div');el.className='seq-item '+(sMode==='numbers'?'n':'c')+' flash';if(sMode==='numbers')el.textContent=sSeq[i];else{el.style.background=SPAL[sSeq[i]];el.style.boxShadow=`0 0 20px ${SPAL[sSeq[i]]}`;el.style.border=`1.5px solid ${SPAL[sSeq[i]]}`}disp.appendChild(el);i++;setTimeout(nx,spd)};nx()}
-function sInput(){document.getElementById('sq-inst').textContent='⌨ Enter:';document.getElementById('sq-slots').innerHTML=sSeq.map((_,i)=>`<div class="seq-slot" id="ss${i}"></div>`).join('');const ctrl=document.getElementById('sq-ctrl');if(sMode==='numbers'){ctrl.innerHTML=`<div class="seq-kpad">${[1,2,3,4,5,6,7,8,9,'⌫','0','✓'].map(k=>{let c='sk ';if(k==='⌫')c+='d';else if(k==='✓')c+='s';else c+='n';return`<button class="${c}" onclick="sKey('${k}')">${k}</button>`}).join('')}</div>`}else{ctrl.innerHTML=`<div class="col-keys">${SPAL.map((c,i)=>`<div class="col-key" style="background:${c}" onclick="sColKey(${i})"></div>`).join('')}</div><div style="display:flex;gap:7px;justify-content:center;margin-top:9px"><button class="sk d" onclick="sKey('⌫')">⌫</button><button class="sk s" onclick="sSubmit()">✓</button></div>`}}
+function sInput(){document.getElementById('sq-inst').textContent='⌨ Enter the sequence:';document.getElementById('sq-slots').innerHTML=sSeq.map((_,i)=>`<div class="seq-slot" id="ss${i}"></div>`).join('');const ctrl=document.getElementById('sq-ctrl');if(sMode==='numbers'){ctrl.innerHTML=`<div class="seq-kpad">${[1,2,3,4,5,6,7,8,9,'⌫','0','✓'].map(k=>{let c='sk ';if(k==='⌫')c+='d';else if(k==='✓')c+='s';else c+='n';return`<button class="${c}" onclick="sKey('${k}')">${k}</button>`}).join('')}</div>`}else{ctrl.innerHTML=`<div class="col-keys">${SPAL.map((c,i)=>`<div class="col-key" style="background:${c}" onclick="sColKey(${i})"></div>`).join('')}</div><div style="display:flex;gap:7px;justify-content:center;margin-top:9px"><button class="sk d" onclick="sKey('⌫')">⌫ Del</button><button class="sk s" style="padding:9px 22px" onclick="sSubmit()">✓ Submit</button></div>`}}
 function sKey(k){if(k==='⌫')sUser.pop();else if(k==='✓'){sSubmit();return}else if(sUser.length<sSeq.length)sUser.push(parseInt(k));sUpdateSlots();if(sMode==='numbers'&&sUser.length===sSeq.length)sSubmit()}
 function sColKey(ci){if(sUser.length<sSeq.length){sUser.push(ci);sUpdateSlots()}}
 function sUpdateSlots(){sUser.forEach((v,i)=>{const sl=document.getElementById('ss'+i);if(!sl)return;sl.classList.add('f');if(sMode==='numbers')sl.textContent=v;else{sl.style.background=SPAL[v];sl.style.border=`1.5px solid ${SPAL[v]}`}});for(let i=sUser.length;i<sSeq.length;i++){const sl=document.getElementById('ss'+i);if(sl){sl.classList.remove('f');sl.textContent='';sl.style.background='';sl.style.border=''}}}
-function sSubmit(){const el=Date.now()-sT0;const ok=sUser.length===sSeq.length&&sUser.every((v,i)=>v===sSeq[i]);sLog.push({q:`Round ${sRn}`,time:el,correct:ok});if(ok){sSc+=100+sLev*10;sSt++;document.getElementById('sq-inst').textContent='✅ Correct!';if(sLev<10)sLev++}else{sSt=0;document.getElementById('sq-inst').textContent='❌ Incorrect.'}document.getElementById('sq-ctrl').innerHTML='';_sS();if(sRn>=10||(sLev>=10&&ok))setTimeout(sFinish,1000);else{sMode=sLev<=5?'numbers':'colors';setTimeout(sNext,1500)}}
-function sFinish(){const co=sLog.filter(e=>e.correct).length;showResult(co,sLog.length,[{label:'Rounds',value:sRn},{label:'Correct',value:co},{label:'Streak',value:sSt},{label:'Level',value:sLev},{label:'Score',value:sSc}],sLog)}
+function sSubmit(){const el=Date.now()-sT0;const ok=sUser.length===sSeq.length&&sUser.every((v,i)=>v===sSeq[i]);sLog.push({q:`Round ${sRn} (len ${sSeq.length})`,time:el,correct:ok});if(ok){sSc+=100+sLev*10;sSt++;document.getElementById('sq-inst').textContent='✅ Correct!';if(sLev<10)sLev++}else{sSt=0;document.getElementById('sq-inst').textContent='❌ Incorrect.'}document.getElementById('sq-ctrl').innerHTML='';_sS();if(sRn>=10||(sLev>=10&&ok))setTimeout(sFinish,1000);else{sMode=sLev<=5?'numbers':'colors';document.getElementById('sq-tag').textContent=sMode==='numbers'?'NUMBERS':'COLORS';setTimeout(sNext,1500)}}
+function sFinish(){const co=sLog.filter(e=>e.correct).length;SCORES.seq={acc:co/sLog.length,correct:co,rounds:sLog.length,score:sSc,maxLevel:sLev};showResult(co,sLog.length,[{label:'Rounds Played',value:sRn},{label:'Correct',value:co},{label:'Max Streak',value:sSt},{label:'Final Level',value:sLev},{label:'Score',value:sSc}],sLog)}
 
-/* ── REACTION ─── */
+/* ── REACTION TEST ────────────────────────────────── */
 let rtRound=0,rtTimes=[],rtT0=0,rtWaiting=false,rtTimeout=null,rtActive=false;
 function rtReset(){rtRound=0;rtTimes=[];rtActive=false;['rt-rn','rt-bt','rt-av','rt-rt'].forEach(id=>document.getElementById(id).textContent=id==='rt-rn'?0:'—');document.getElementById('rt-chips').innerHTML='';document.getElementById('rt-sg').innerHTML='';document.getElementById('rt-msg').textContent='Press Start';document.getElementById('rt-msg').style.display='block';document.getElementById('rt-tgt').style.display='none';document.getElementById('rt-arena').className='react-arena wait';document.getElementById('rt-sb').style.display='inline-flex'}
 function rtStart(){document.getElementById('rt-sb').style.display='none';rtActive=true;rtNextRound()}
 function rtNextRound(){if(rtRound>=10){rtFinish();return}rtWaiting=true;document.getElementById('rt-arena').className='react-arena wait';document.getElementById('rt-msg').textContent='Wait...';document.getElementById('rt-msg').style.display='block';document.getElementById('rt-tgt').style.display='none';rtTimeout=setTimeout(rtShowTarget,1200+Math.random()*3500)}
 function rtShowTarget(){if(!rtActive)return;rtWaiting=false;const arena=document.getElementById('rt-arena'),tgt=document.getElementById('rt-tgt');arena.className='react-arena ready';document.getElementById('rt-msg').style.display='none';const aw=arena.offsetWidth-74,ah=arena.offsetHeight-74;tgt.style.left=Math.max(0,Math.random()*aw)+'px';tgt.style.top=Math.max(0,Math.random()*ah)+'px';tgt.style.display='flex';rtT0=Date.now()}
 function rtAreaClick(){if(!rtActive||!rtWaiting)return;clearTimeout(rtTimeout);document.getElementById('rt-arena').className='react-arena fast';document.getElementById('rt-msg').textContent='⚠️ Too early!';document.getElementById('rt-msg').style.display='block';setTimeout(rtNextRound,1600)}
-function rtHit(e){if(!rtActive)return;e.stopPropagation();const el=Date.now()-rtT0;rtTimes.push(el);rtRound++;document.getElementById('rt-rn').textContent=rtRound;document.getElementById('rt-tgt').style.display='none';document.getElementById('rt-msg').textContent=el+'ms';document.getElementById('rt-msg').style.display='block';document.getElementById('rt-arena').className='react-arena wait';const best=Math.min(...rtTimes),avg=Math.round(rtTimes.reduce((a,b)=>a+b,0)/rtTimes.length);document.getElementById('rt-bt').textContent=best;document.getElementById('rt-av').textContent=avg;document.getElementById('rt-rt').textContent=avg<200?'⚡ Excellent':avg<350?'👍 Good':avg<500?'⚠️ Average':'🐢 Slow';document.getElementById('rt-chips').innerHTML=rtTimes.map(t=>`<div class="r-chip ${t<250?'fast':t<450?'ok':'slow'}">${t}ms</div>`).join('');document.getElementById('rt-sg').innerHTML=`<div class="r-stat"><div class="rv">${el}ms</div><div class="rl">Last Hit</div></div><div class="r-stat"><div class="rv">${best}ms</div><div class="rl">Best</div></div><div class="r-stat"><div class="rv">${avg}ms</div><div class="rl">Avg</div></div><div class="r-stat"><div class="rv">${rtTimes.filter(t=>t<350).length}</div><div class="rl">Fast</div></div>`;setTimeout(rtNextRound,900)}
-function rtFinish(){rtActive=false;const avg=rtTimes.length?Math.round(rtTimes.reduce((a,b)=>a+b,0)/rtTimes.length):9999;const best=rtTimes.length?Math.min(...rtTimes):9999;const sv=rtTimes.filter(t=>t<500).length;showResult(sv,10,[{label:'Avg Reaction',value:avg+'ms'},{label:'Best Reaction',value:best+'ms'},{label:'Rounds <500ms',value:sv+'/10'},{label:'Rating',value:avg<200?'Excellent':avg<350?'Good':avg<500?'Average':'Below Avg'}],rtTimes.map((t,i)=>({q:`Round ${i+1}`,time:t,correct:t<500})))}
+function rtHit(e){if(!rtActive)return;e.stopPropagation();const el=Date.now()-rtT0;rtTimes.push(el);rtRound++;document.getElementById('rt-rn').textContent=rtRound;document.getElementById('rt-tgt').style.display='none';document.getElementById('rt-msg').textContent=el+'ms';document.getElementById('rt-msg').style.display='block';document.getElementById('rt-arena').className='react-arena wait';const best=Math.min(...rtTimes),avg=Math.round(rtTimes.reduce((a,b)=>a+b,0)/rtTimes.length);document.getElementById('rt-bt').textContent=best;document.getElementById('rt-av').textContent=avg;document.getElementById('rt-rt').textContent=avg<200?'⚡ Excellent':avg<350?'👍 Good':avg<500?'⚠️ Average':'🐢 Slow';document.getElementById('rt-chips').innerHTML=rtTimes.map(t=>`<div class="r-chip ${t<250?'fast':t<450?'ok':'slow'}">${t}ms</div>`).join('');document.getElementById('rt-sg').innerHTML=`<div class="r-stat"><div class="rv">${el}ms</div><div class="rl">Last Hit</div></div><div class="r-stat"><div class="rv">${best}ms</div><div class="rl">Best</div></div><div class="r-stat"><div class="rv">${avg}ms</div><div class="rl">Average</div></div><div class="r-stat"><div class="rv">${rtTimes.filter(t=>t<350).length}</div><div class="rl">Fast Hits</div></div>`;setTimeout(rtNextRound,900)}
+function rtFinish(){rtActive=false;const avg=rtTimes.length?Math.round(rtTimes.reduce((a,b)=>a+b,0)/rtTimes.length):9999;const best=rtTimes.length?Math.min(...rtTimes):9999;const sv=rtTimes.filter(t=>t<500).length;SCORES.react={avg,best,fastHits:sv,total:rtTimes.length,good:sv};showResult(sv,10,[{label:'Average Reaction',value:avg+'ms'},{label:'Best Reaction',value:best+'ms'},{label:'Rounds <500ms',value:sv+'/10'},{label:'Performance',value:avg<200?'Excellent ⚡':avg<350?'Good 👍':avg<500?'Average ⚠️':'Below Average 🐢'}],rtTimes.map((t,i)=>({q:`Round ${i+1}`,time:t,correct:t<500})))}
 
-/* ══════════════════════════════════════════════════
-   FACE-API.JS EMOTION DETECTION
-   Using vladmandic/face-api — TinyFaceDetector + FaceExpressionNet
-   Models hosted on justadudewhohacks GitHub CDN
-   ══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   REAL FACE-API.JS INTEGRATION
+   Using: justadudewhohacks/face-api.js v0.22.2
+   Models: TinyFaceDetector, FaceLandmark68Net, FaceExpressionNet, AgeGenderNet
+   Model weights served from CDN (jsDelivr)
+═══════════════════════════════════════════════════════ */
 
-const MODEL_URL = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights';
+const MODEL_URL = 'https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights';
 
-const EMOTIONS = ['neutral','happy','sad','angry','fearful','disgusted','surprised'];
+let faceApiLoaded = false;
+let pipStream = null, pipLoop = null, pipRunning = false, pipMini = false;
 
-// Emotion → color mapping (stays muted/monochrome except for the bar fill)
-const EMO_COLORS = {
-  neutral:   'rgba(255,255,255,0.35)',
-  happy:     'rgba(255,197,48,0.7)',
-  sad:       'rgba(77,159,255,0.7)',
-  angry:     'rgba(255,61,90,0.7)',
-  fearful:   'rgba(200,125,255,0.7)',
-  disgusted: 'rgba(255,140,66,0.7)',
-  surprised: 'rgba(0,229,160,0.7)'
+// ADRS live data collector
+const ADRS_DATA = {
+  frames: [],          // {time, detected, expressions, age, gaze}
+  noFaceFrames: 0,
+  totalFrames: 0,
+  affectHistory: [],   // rolling last-30 dominant expression scores
+  expressionCounts: {neutral:0,happy:0,sad:0,angry:0,fearful:0,disgusted:0,surprised:0},
 };
 
-const EMO_EMOJI = {
-  neutral:'😐', happy:'😄', sad:'😢', angry:'😠',
-  fearful:'😨', disgusted:'🤢', surprised:'😮'
-};
-
-let pipStream=null,pipDetectInterval=null,pipRunning=false,pipMini=false;
-let faceApiLoaded=false,faceApiLoading=false;
-
-// Build emotion bar rows HTML once
-(function(){
-  const rows=document.getElementById('pip-emo-rows');
-  rows.innerHTML=EMOTIONS.map(e=>`
-    <div class="emo-row">
-      <div class="emo-name">${e}</div>
-      <div class="emo-track"><div class="emo-fill" id="ef-${e}" style="background:${EMO_COLORS[e]}"></div></div>
-      <div class="emo-pct" id="ep-${e}">0%</div>
-    </div>`).join('');
-})();
-
-function setLoadingProgress(pct,txt){
-  document.getElementById('pip-loading-fill').style.width=pct+'%';
-  if(txt)document.getElementById('pip-loading-txt').textContent=txt;
+async function loadFaceApiModels(){
+  const rows = {tiny:'mp-tiny', land:'mp-land', expr:'mp-expr', age:'mp-age'};
+  function setRow(id, state, text){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.className = 'mp-row ' + state;
+    el.querySelector('span:last-child').textContent = text;
+  }
+  try {
+    setRow('mp-tiny','loading','Loading...');
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+    setRow('mp-tiny','done','✓ Loaded');
+  } catch(e){ setRow('mp-tiny','wait','Failed') }
+  try {
+    setRow('mp-land','loading','Loading...');
+    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+    setRow('mp-land','done','✓ Loaded');
+  } catch(e){ setRow('mp-land','wait','Failed') }
+  try {
+    setRow('mp-expr','loading','Loading...');
+    await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
+    setRow('mp-expr','done','✓ Loaded');
+  } catch(e){ setRow('mp-expr','wait','Failed') }
+  try {
+    setRow('mp-age','loading','Loading...');
+    await faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL);
+    setRow('mp-age','done','✓ Loaded');
+  } catch(e){ setRow('mp-age','wait','Failed') }
+  faceApiLoaded = true;
+  document.getElementById('pip-loading').textContent = 'AI Ready — Start camera';
+  document.getElementById('pip-svt').textContent = 'Models ready';
 }
 
-async function loadFaceApi(){
-  if(faceApiLoaded)return true;
-  if(faceApiLoading)return false;
-  faceApiLoading=true;
-  try{
-    setLoadingProgress(10,'Loading face detector...');
-    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-    setLoadingProgress(60,'Loading expression model...');
-    await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
-    setLoadingProgress(100,'Ready');
-    faceApiLoaded=true;
-    setTimeout(()=>{
-      const lo=document.getElementById('pip-loading');
-      if(lo)lo.style.display='none';
-    },400);
-    return true;
-  }catch(err){
-    setLoadingProgress(0,'Model load failed');
-    document.getElementById('pip-loading-txt').textContent='⚠️ Model failed — check connection';
-    faceApiLoading=false;
-    return false;
-  }
+// Start loading models as soon as page loads
+if(typeof faceapi !== 'undefined'){
+  loadFaceApiModels();
+} else {
+  console.warn('face-api.js failed to load from CDN');
 }
 
 async function pipStart(){
-  const badge=document.getElementById('face-sbadge');
-  try{
-    pipStream=await navigator.mediaDevices.getUserMedia({video:{width:320,height:240,facingMode:'user'}});
-    const vid=document.getElementById('pip-vid'),cv=document.getElementById('pip-cv');
-    vid.srcObject=pipStream;
-    await new Promise(r=>{vid.onloadedmetadata=r});
-    cv.width=vid.videoWidth;cv.height=vid.videoHeight;
-    pipRunning=true;
+  const badge = document.getElementById('face-sbadge');
+  try {
+    pipStream = await navigator.mediaDevices.getUserMedia({video:{width:320,height:240,facingMode:'user'}});
+    const vid = document.getElementById('pip-vid');
+    const cv  = document.getElementById('pip-cv');
+    vid.srcObject = pipStream;
+    await new Promise(res => vid.onloadedmetadata = res);
+    cv.width  = vid.videoWidth;
+    cv.height = vid.videoHeight;
+    pipRunning = true;
     document.getElementById('face-pip').classList.add('on');
-    pipMini=false;document.getElementById('face-pip').classList.remove('mini');
-    if(badge){badge.className='active';badge.textContent='● Camera Active'}
-    document.getElementById('pip-loading').style.display='flex';
-    document.getElementById('pip-svt').textContent='Loading AI...';
-    // Load models (non-blocking — detection starts after)
-    const ok=await loadFaceApi();
-    if(ok)startDetectionLoop();
-    else document.getElementById('pip-svt').textContent='Model Error';
-  }catch(e){
-    if(badge){badge.className='';badge.textContent='❌ Camera Denied'}
+    document.getElementById('pip-vw').style.display = 'block';
+    document.getElementById('pip-loading').style.display = 'none';
+    pipMini = false;
+    document.getElementById('face-pip').classList.remove('mini');
+    if(badge){ badge.className='active'; badge.textContent='● Camera Active' }
+    pipDetectLoop();
+  } catch(e){
+    if(badge){ badge.className=''; badge.textContent='❌ Camera Denied' }
   }
 }
 
-function startDetectionLoop(){
-  if(pipDetectInterval)clearInterval(pipDetectInterval);
-  document.getElementById('pip-svt').textContent='Scanning';
-  // Run detection every 300ms — good balance of perf vs accuracy
-  pipDetectInterval=setInterval(runDetection,300);
+function pipDetectLoop(){
+  if(pipLoop) clearInterval(pipLoop);
+  const sv = document.getElementById('pip-svt');
+  const psd = document.getElementById('pip-stv');
+
+  pipLoop = setInterval(async () => {
+    if(!pipRunning) return;
+    const vid = document.getElementById('pip-vid');
+    const cv  = document.getElementById('pip-cv');
+    if(!vid || !cv || vid.readyState < 2) return;
+
+    const ctx = cv.getContext('2d');
+    cv.width  = vid.videoWidth  || 320;
+    cv.height = vid.videoHeight || 240;
+    ctx.clearRect(0, 0, cv.width, cv.height);
+
+    ADRS_DATA.totalFrames++;
+
+    if(faceApiLoaded){
+      try {
+        const options = new faceapi.TinyFaceDetectorOptions({inputSize:224, scoreThreshold:0.4});
+        const detections = await faceapi.detectSingleFace(vid, options)
+          .withFaceLandmarks()
+          .withFaceExpressions()
+          .withAgeAndGender();
+
+        if(detections){
+          const { detection, landmarks, expressions, age, gender, genderProbability } = detections;
+          const box = detection.box;
+
+          // Draw bounding box
+          ctx.strokeStyle = 'rgba(0,229,160,0.85)';
+          ctx.lineWidth = 1.5;
+          ctx.shadowBlur = 8; ctx.shadowColor = 'rgba(0,229,160,0.5)';
+          ctx.strokeRect(box.x, box.y, box.width, box.height);
+          ctx.shadowBlur = 0;
+
+          // Corner brackets
+          const cs = 10;
+          [[box.x,box.y],[box.x+box.width-cs,box.y],[box.x,box.y+box.height-cs],[box.x+box.width-cs,box.y+box.height-cs]].forEach(([x,y])=>{
+            ctx.strokeStyle='#00e5a0'; ctx.lineWidth=2.2;
+            ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+cs,y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y+cs); ctx.stroke();
+          });
+
+          // Draw 68 facial landmarks
+          const pts = landmarks.positions;
+          ctx.fillStyle = 'rgba(255,255,255,0.55)';
+          pts.forEach(pt => {
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, 1.2, 0, Math.PI*2);
+            ctx.fill();
+          });
+
+          // Expression label
+          const dom = Object.entries(expressions).reduce((a,b)=>b[1]>a[1]?b:a);
+          const conf = (detection.score * 100).toFixed(0);
+          ctx.fillStyle = 'rgba(0,0,0,0.72)';
+          ctx.fillRect(box.x, box.y - 18, box.width, 16);
+          ctx.fillStyle = '#00e5a0';
+          ctx.font = 'bold 8px JetBrains Mono,monospace';
+          ctx.fillText(`${dom[0].toUpperCase()} · ${conf}% · ${Math.round(age)}y`, box.x+4, box.y-5);
+
+          // Update ADRS_DATA
+          Object.keys(expressions).forEach(k => {
+            if(ADRS_DATA.expressionCounts[k] !== undefined)
+              ADRS_DATA.expressionCounts[k] += expressions[k];
+          });
+          ADRS_DATA.affectHistory.push(dom[1]);
+          if(ADRS_DATA.affectHistory.length > 60) ADRS_DATA.affectHistory.shift();
+
+          ADRS_DATA.frames.push({time:Date.now(), detected:true, expressions, age, gender});
+
+          // Update pip panel
+          const affectVar = calcAffectVariance();
+          updateADRSPanel(true, dom[0], affectVar, age, gender);
+          if(sv) sv.textContent = 'Face Verified ✓';
+          if(psd) psd.className = '';
+
+        } else {
+          ADRS_DATA.noFaceFrames++;
+          ADRS_DATA.frames.push({time:Date.now(),detected:false});
+          const affectVar = calcAffectVariance();
+          updateADRSPanel(false, '—', affectVar, null, null);
+          if(sv) sv.textContent = 'No Face';
+          if(psd) psd.className = 'w';
+        }
+      } catch(err){
+        // Fallback to simple canvas overlay
+        pipFallbackDraw(ctx, cv.width, cv.height);
+      }
+    } else {
+      // Models still loading — show fallback
+      pipFallbackDraw(ctx, cv.width, cv.height);
+      if(sv) sv.textContent = 'Loading AI...';
+    }
+  }, 300); // run at ~3fps to not overload CPU
 }
 
-async function runDetection(){
-  if(!pipRunning||!faceApiLoaded)return;
-  const vid=document.getElementById('pip-vid');
-  if(!vid||vid.readyState<2)return;
-  try{
-    const det=await faceapi
-      .detectSingleFace(vid,new faceapi.TinyFaceDetectorOptions({inputSize:224,scoreThreshold:0.5}))
-      .withFaceExpressions();
-    drawDetection(det);
-  }catch(e){/* silent fail */}
+function calcAffectVariance(){
+  if(ADRS_DATA.affectHistory.length < 5) return null;
+  const h = ADRS_DATA.affectHistory;
+  const mean = h.reduce((a,b)=>a+b,0)/h.length;
+  const variance = h.reduce((a,b)=>a+(b-mean)**2,0)/h.length;
+  return Math.sqrt(variance); // standard deviation of dominant expression confidence
 }
 
-function drawDetection(det){
-  const cv=document.getElementById('pip-cv');
-  const sv=document.getElementById('pip-svt'),psd=document.getElementById('pip-stv');
-  if(!cv)return;
-  const ctx=cv.getContext('2d');
-  // Match canvas to video
-  const vid=document.getElementById('pip-vid');
-  cv.width=vid.videoWidth||320;cv.height=vid.videoHeight||240;
-  ctx.clearRect(0,0,cv.width,cv.height);
+function updateADRSPanel(detected, expr, affectVar, age, gender){
+  const faceEl = document.getElementById('adrs-face');
+  const exprEl = document.getElementById('adrs-expr');
+  const affEl  = document.getElementById('adrs-affect');
+  const scoreEl = document.getElementById('adrs-score');
+  const barEl   = document.getElementById('adrs-bar');
 
-  // Reset all bars
-  EMOTIONS.forEach(e=>{
-    const fill=document.getElementById('ef-'+e);
-    const pct=document.getElementById('ep-'+e);
-    if(fill)fill.style.width='0%';
-    if(pct)pct.textContent='0%';
-  });
-
-  if(!det){
-    if(sv)sv.textContent='No Face';if(psd)psd.className='w';
-    return;
+  if(faceEl) { faceEl.textContent = detected?'✓ Yes':'✗ No'; faceEl.className='adrs-val '+(detected?'ok':'err'); }
+  if(exprEl) { exprEl.textContent = expr; exprEl.className='adrs-val '+(expr==='neutral'||expr==='—'?'warn':'ok'); }
+  if(affEl) {
+    if(affectVar===null){ affEl.textContent='Calibrating'; affEl.className='adrs-val'; }
+    else { affEl.textContent=(affectVar*100).toFixed(1)+'%'; affEl.className='adrs-val '+(affectVar<0.08?'err':affectVar<0.18?'warn':'ok'); }
   }
+  // Compute live partial ADRS
+  const liveADRS = computeLiveADRS(detected, affectVar);
+  SCORES.face = {liveADRS, affectVar, noFaceRatio: ADRS_DATA.totalFrames>0?ADRS_DATA.noFaceFrames/ADRS_DATA.totalFrames:null, expressions:ADRS_DATA.expressionCounts, totalFrames:ADRS_DATA.totalFrames};
+  if(scoreEl){ scoreEl.textContent=liveADRS; const cls=liveADRS<30?'ok':liveADRS<60?'warn':'err'; scoreEl.className='adrs-val '+cls; }
+  if(barEl){ const pct=liveADRS; barEl.style.width=pct+'%'; barEl.style.background=pct<30?'var(--ok)':pct<60?'var(--warn)':'var(--err)'; }
+}
 
-  // Draw face bounding box
-  const box=det.detection.box;
-  // Because video is mirrored via CSS, box coords are already in display-space
-  ctx.strokeStyle='rgba(255,255,255,0.7)';ctx.lineWidth=1.2;
-  ctx.shadowBlur=6;ctx.shadowColor='rgba(255,255,255,0.4)';
-  ctx.strokeRect(box.x,box.y,box.width,box.height);ctx.shadowBlur=0;
+function computeLiveADRS(detected, affectVar){
+  // Quick live estimate — full computation done in report
+  let score = 0;
+  if(!detected) score += 15;
+  const noFaceRatio = ADRS_DATA.totalFrames>0?ADRS_DATA.noFaceFrames/ADRS_DATA.totalFrames:0;
+  score += noFaceRatio * 25;
+  if(affectVar !== null && affectVar < 0.08) score += 20; // flat affect
+  else if(affectVar !== null && affectVar < 0.15) score += 10;
+  const neutralDom = ADRS_DATA.expressionCounts.neutral / Math.max(1, ADRS_DATA.totalFrames);
+  if(neutralDom > 0.7) score += 10;
+  return Math.min(99, Math.round(score));
+}
 
-  // Corner brackets
-  const cs=10;
-  [[box.x,box.y],[box.x+box.width-cs,box.y],[box.x,box.y+box.height-cs],[box.x+box.width-cs,box.y+box.height-cs]].forEach(([x,y])=>{
-    ctx.strokeStyle='rgba(255,255,255,0.9)';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+cs,y);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+cs);ctx.stroke();
-  });
-
-  // Get dominant emotion
-  const expressions=det.expressions;
-  let domEmo='neutral',domVal=0;
-  for(const [emo,val] of Object.entries(expressions)){if(val>domVal){domVal=val;domEmo=emo}}
-
-  // Update emotion bars
-  EMOTIONS.forEach(e=>{
-    const val=(expressions[e]||0);
-    const pct=Math.round(val*100);
-    const fill=document.getElementById('ef-'+e);
-    const pctEl=document.getElementById('ep-'+e);
-    if(fill)fill.style.width=pct+'%';
-    if(pctEl)pctEl.textContent=pct+'%';
-  });
-
-  // Emotion label in box
-  const emoText=`${EMO_EMOJI[domEmo]||''} ${domEmo} ${Math.round(domVal*100)}%`;
-  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(box.x,box.y-18,box.width,16);
-  ctx.fillStyle='rgba(255,255,255,0.9)';ctx.font='bold 8px JetBrains Mono,monospace';
-  ctx.fillText(emoText,box.x+4,box.y-5);
-
-  // Update status
-  if(sv)sv.textContent=`${EMO_EMOJI[domEmo]} ${domEmo}`;
-  if(psd)psd.className='';
+function pipFallbackDraw(ctx, w, h){
+  const t = Date.now()/1000, cx=w*.5, cy=h*.44, fw=w*.32, fh=h*.46;
+  const p=1+Math.sin(t*2)*.008;
+  ctx.strokeStyle='rgba(80,80,80,0.4)'; ctx.lineWidth=1;
+  ctx.strokeRect((cx-fw/2)*p, cy-fh/2, fw, fh);
+  ctx.fillStyle='rgba(80,80,80,0.4)'; ctx.font='8px monospace';
+  ctx.fillText('Loading AI...', cx-fw/2+3, cy-fh/2-4);
 }
 
 function pipStop(){
-  pipRunning=false;
-  if(pipDetectInterval){clearInterval(pipDetectInterval);pipDetectInterval=null}
-  if(pipStream){pipStream.getTracks().forEach(t=>t.stop());pipStream=null}
-  const cv=document.getElementById('pip-cv');
-  if(cv){const ctx=cv.getContext('2d');if(ctx)ctx.clearRect(0,0,cv.width,cv.height)}
-  document.getElementById('face-pip').classList.remove('on');pipMini=false;
-  const badge=document.getElementById('face-sbadge');
-  if(badge){badge.className='';badge.textContent='● Camera Offline'}
-  EMOTIONS.forEach(e=>{const f=document.getElementById('ef-'+e);const p=document.getElementById('ep-'+e);if(f)f.style.width='0%';if(p)p.textContent='0%'});
-  document.getElementById('pip-svt').textContent='Scanning';
-  // Reset loading overlay for next time
-  const lo=document.getElementById('pip-loading');
-  if(lo&&!faceApiLoaded){lo.style.display='flex';setLoadingProgress(0,'Loading AI models')}
+  pipRunning = false;
+  if(pipLoop){ clearInterval(pipLoop); pipLoop=null }
+  if(pipStream){ pipStream.getTracks().forEach(t=>t.stop()); pipStream=null }
+  const cv = document.getElementById('pip-cv');
+  if(cv){ const ctx=cv.getContext('2d'); if(ctx) ctx.clearRect(0,0,cv.width,cv.height) }
+  document.getElementById('face-pip').classList.remove('on');
+  document.getElementById('pip-vw').style.display = 'none';
+  document.getElementById('pip-loading').style.display = 'block';
+  document.getElementById('pip-loading').textContent = 'Camera stopped';
+  pipMini=false;
+  const badge = document.getElementById('face-sbadge');
+  if(badge){ badge.className=''; badge.textContent='● Camera Offline' }
 }
 
 function pipToggle(){
-  if(!pipRunning)return;
-  const pip=document.getElementById('face-pip');
-  pipMini=!pipMini;pipMini?pip.classList.add('mini'):pip.classList.remove('mini');
+  if(!pipRunning) return;
+  const pip = document.getElementById('face-pip');
+  pipMini=!pipMini; pipMini?pip.classList.add('mini'):pip.classList.remove('mini');
 }
 
 /* Draggable pip */
@@ -913,7 +1169,8 @@ function pipToggle(){
   document.addEventListener('mousedown',e=>{
     const h=document.getElementById('pip-head');
     if(!h||!h.contains(e.target)||e.target.id==='pip-min')return;
-    const p=document.getElementById('face-pip');const rect=p.getBoundingClientRect();
+    const p=document.getElementById('face-pip');
+    const rect=p.getBoundingClientRect();
     drag=true;sx=e.clientX;sy=e.clientY;ox=rect.left;oy=rect.top;
     p.style.transition='none';p.style.right='auto';p.style.bottom='auto';
     p.style.left=ox+'px';p.style.top=oy+'px';e.preventDefault();
@@ -921,6 +1178,173 @@ function pipToggle(){
   document.addEventListener('mousemove',e=>{if(!drag)return;const p=document.getElementById('face-pip');p.style.left=(ox+(e.clientX-sx))+'px';p.style.top=(oy+(e.clientY-sy))+'px'});
   document.addEventListener('mouseup',()=>{if(drag){drag=false;document.getElementById('face-pip').style.transition=''}});
 })();
+
+/* ═══════════════════════════════════════════════════════
+   ALZHEIMER DISEASE RISK SCORE (ADRS) COMPUTATION
+   Multi-factor: memory accuracy + reaction time + face metrics
+   Based on established cognitive screening frameworks
+   (NOT a medical diagnosis — screening tool only)
+═══════════════════════════════════════════════════════ */
+
+function buildAlzheimerReport(){
+  const score = computeFullADRS();
+  renderAlzheimerReport(score);
+}
+
+function computeFullADRS(){
+  // Each component contributes to risk (higher = more risk indicators)
+  let riskPoints = 0;
+  let maxPoints  = 0;
+  const signals  = [];
+  const metrics  = [];
+
+  // ── 1. LED Memory ──────────────────────────────
+  maxPoints += 30;
+  if(SCORES.led){
+    const acc = SCORES.led.acc; // 0-1
+    const level = SCORES.led.level; // 1-10
+    const memScore = acc * 0.6 + (level/10) * 0.4;
+    const risk = Math.round((1-memScore)*30);
+    riskPoints += risk;
+    metrics.push({name:'Sequential Memory', value:`${Math.round(acc*100)}% acc`, pct:Math.round(acc*100), color:acc>0.7?'var(--ok)':acc>0.4?'var(--warn)':'var(--err)'});
+    signals.push({text:`Short-term sequential memory: Level ${level}/10, ${Math.round(acc*100)}% accuracy`, type: acc>0.7?'ok':acc>0.4?'warn':'err', badge:acc>0.7?'Normal':acc>0.4?'Borderline':'Impaired'});
+  } else {
+    metrics.push({name:'Sequential Memory', value:'Not tested', pct:50, color:'var(--t3)'});
+    signals.push({text:'Sequential memory not assessed (LED Memory not completed)', type:'warn', badge:'Pending'});
+  }
+
+  // ── 2. Visual Memory ──────────────────────────
+  maxPoints += 25;
+  if(SCORES.photo){
+    const acc = SCORES.photo.acc;
+    const risk = Math.round((1-acc)*25);
+    riskPoints += risk;
+    metrics.push({name:'Visual Recognition', value:`${Math.round(acc*100)}%`, pct:Math.round(acc*100), color:acc>0.7?'var(--ok)':acc>0.4?'var(--warn)':'var(--err)'});
+    signals.push({text:`Visual memory recall: ${SCORES.photo.correct}/${SCORES.photo.total} correct (${Math.round(acc*100)}%)`, type:acc>0.7?'ok':acc>0.4?'warn':'err', badge:acc>0.7?'Normal':acc>0.4?'Borderline':'Impaired'});
+  } else {
+    metrics.push({name:'Visual Recognition', value:'Not tested', pct:50, color:'var(--t3)'});
+    signals.push({text:'Visual recognition memory not assessed (Photo Memory not completed)', type:'warn', badge:'Pending'});
+  }
+
+  // ── 3. Working Memory / Sequence ──────────────
+  maxPoints += 20;
+  if(SCORES.seq){
+    const acc = SCORES.seq.acc;
+    const lvl = SCORES.seq.maxLevel;
+    const wmScore = acc*0.5 + (lvl/10)*0.5;
+    const risk = Math.round((1-wmScore)*20);
+    riskPoints += risk;
+    metrics.push({name:'Working Memory', value:`Lvl ${lvl} · ${Math.round(acc*100)}%`, pct:Math.round(wmScore*100), color:wmScore>0.6?'var(--ok)':wmScore>0.35?'var(--warn)':'var(--err)'});
+    signals.push({text:`Working memory & pattern recognition: Level ${lvl}/10, ${Math.round(acc*100)}% accuracy`, type:acc>0.6?'ok':acc>0.35?'warn':'err', badge:acc>0.6?'Normal':acc>0.35?'Borderline':'Impaired'});
+  } else {
+    metrics.push({name:'Working Memory', value:'Not tested', pct:50, color:'var(--t3)'});
+    signals.push({text:'Working memory not assessed (Sequence Test not completed)', type:'warn', badge:'Pending'});
+  }
+
+  // ── 4. Psychomotor Speed ──────────────────────
+  maxPoints += 15;
+  if(SCORES.react){
+    const avg = SCORES.react.avg;
+    // Normal reaction: <350ms. Alzheimer's often shows >600ms psychomotor slowing
+    let psRisk;
+    if(avg < 300)      { psRisk=0; }
+    else if(avg < 400) { psRisk=3; }
+    else if(avg < 550) { psRisk=7; }
+    else if(avg < 700) { psRisk=11; }
+    else               { psRisk=15; }
+    riskPoints += psRisk;
+    const label = avg<300?'Excellent':avg<400?'Normal':avg<550?'Slowed':avg<700?'Impaired':'Severely Slowed';
+    metrics.push({name:'Psychomotor Speed', value:`${avg}ms avg`, pct:Math.max(0,Math.min(100,Math.round((700-avg)/400*100))), color:avg<400?'var(--ok)':avg<600?'var(--warn)':'var(--err)'});
+    signals.push({text:`Reaction time: ${avg}ms average (${label}). Psychomotor slowing is an early Alzheimer's indicator.`, type:avg<400?'ok':avg<600?'warn':'err', badge:label});
+  } else {
+    metrics.push({name:'Psychomotor Speed', value:'Not tested', pct:50, color:'var(--t3)'});
+    signals.push({text:'Psychomotor speed not assessed (Reaction Test not completed)', type:'warn', badge:'Pending'});
+  }
+
+  // ── 5. Face AI / Behavioral Signals ──────────
+  maxPoints += 10;
+  if(SCORES.face && SCORES.face.totalFrames > 5){
+    const noFaceR = SCORES.face.noFaceRatio || 0;
+    const affectV = SCORES.face.affectVar;
+    let faceRisk = 0;
+    faceRisk += noFaceR * 8; // disengagement
+    if(affectV !== null && affectV < 0.08) faceRisk += 8; // flat affect
+    else if(affectV !== null && affectV < 0.14) faceRisk += 4;
+    faceRisk = Math.min(10, Math.round(faceRisk));
+    riskPoints += faceRisk;
+    const flatAffect = affectV !== null && affectV < 0.1;
+    metrics.push({name:'Behavioral Expression', value:flatAffect?'Flat Affect':'Normal', pct:flatAffect?30:75, color:flatAffect?'var(--warn)':'var(--ok)'});
+    signals.push({text:`Face AI (${SCORES.face.totalFrames} frames): Face disengagement ${Math.round(noFaceR*100)}%. Blunted affect (low expression variance) is associated with Alzheimer's neurodegeneration.`, type:faceRisk<4?'ok':faceRisk<7?'warn':'err', badge:faceRisk<4?'Normal':faceRisk<7?'Mild':' Flagged'});
+  } else {
+    maxPoints -= 10; // Don't penalize if face scan wasn't run
+    metrics.push({name:'Behavioral Expression', value:'Not scanned', pct:50, color:'var(--t3)'});
+    signals.push({text:'Face AI not active. Launch Face Scan module for behavioral expression analysis.', type:'warn', badge:'Pending'});
+  }
+
+  const pct = Math.round((riskPoints / maxPoints) * 100);
+  return {pct, riskPoints, maxPoints, signals, metrics};
+}
+
+function renderAlzheimerReport({pct, riskPoints, maxPoints, signals, metrics}){
+  // Animate ring
+  const ringEl = document.getElementById('alz-ring-fg');
+  const scoreEl = document.getElementById('alz-score-num');
+  if(ringEl){
+    const circ = 465;
+    const offset = circ - (pct/100)*circ;
+    ringEl.style.strokeDashoffset = circ;
+    const color = pct<30?'var(--ok)':pct<60?'var(--warn)':'var(--err)';
+    ringEl.style.stroke = color;
+    setTimeout(()=>{ ringEl.style.strokeDashoffset = offset },100);
+  }
+  // Animate score number
+  if(scoreEl){
+    let cur=0; const step=()=>{ cur=Math.min(cur+2,pct); scoreEl.textContent=cur+'%'; if(cur<pct)requestAnimationFrame(step) };
+    requestAnimationFrame(step);
+  }
+
+  // Verdict
+  let verdict, verdictSub;
+  if(pct<25){
+    verdict='🟢 Low Risk — Cognitive Indicators Normal';
+    verdictSub='All measured cognitive domains fall within healthy reference ranges. No significant indicators for Alzheimer\'s disease risk detected in this screening. Regular annual cognitive wellness checks are recommended.';
+  } else if(pct<50){
+    verdict='🟡 Moderate Risk — Monitor & Retest';
+    verdictSub='Some cognitive metrics show borderline performance. This may reflect fatigue, stress, or early subclinical changes. A follow-up comprehensive neuropsychological assessment within 3–6 months is recommended.';
+  } else if(pct<75){
+    verdict='🟠 Elevated Risk — Clinical Evaluation Advised';
+    verdictSub='Multiple cognitive indicators show significant deviation from normative baselines. Clinical neuropsychological evaluation, including MoCA or MMSE, is strongly advised. Early intervention offers the best outcomes.';
+  } else {
+    verdict='🔴 High Risk — Urgent Specialist Referral';
+    verdictSub='Substantial cognitive impairment signals detected across multiple domains. Urgent referral to a neurologist or Alzheimer\'s specialist is recommended. This does not constitute a diagnosis but warrants immediate professional evaluation.';
+  }
+  document.getElementById('alz-verdict').textContent = verdict;
+  document.getElementById('alz-verdict-sub').textContent = verdictSub;
+
+  // Metric grid
+  const grid = document.getElementById('alz-grid');
+  if(grid){
+    grid.innerHTML = metrics.map(m=>`
+      <div class="alz-metric">
+        <div class="alz-metric-name">${m.name}</div>
+        <div class="alz-metric-val" style="color:${m.color}">${m.value}</div>
+        <div class="alz-metric-bar"><div class="alz-metric-fill" style="width:${m.pct}%;background:${m.color}"></div></div>
+      </div>
+    `).join('');
+  }
+
+  // Signals
+  const sigBody = document.getElementById('alz-signals-body');
+  if(sigBody){
+    sigBody.innerHTML = signals.map(s=>`
+      <div class="alz-signal-row">
+        <div class="alz-sig-dot" style="background:${s.type==='ok'?'var(--ok)':s.type==='warn'?'var(--warn)':'var(--err)'}"></div>
+        <div class="alz-sig-text">${s.text}</div>
+        <div class="alz-sig-badge ${s.type}">${s.badge}</div>
+      </div>
+    `).join('');
+  }
+}
 </script>
 </body>
 </html>
